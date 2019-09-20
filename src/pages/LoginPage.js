@@ -2,8 +2,10 @@ import React from 'react';
 import  {StyleSheet, View, Text, TextInput, Button, ActivityIndicator } from 'react-native';
 import FormRow from '../components/FormRow';
 import firebase from 'firebase';
+import {tryLogin} from '../actions'
+import {connect } from 'react-redux';
 
-export default class LoginPage extends React.Component {
+class LoginPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -37,24 +39,15 @@ export default class LoginPage extends React.Component {
     }
     tryLogin(){
         this.setState({isLoading: true})
-        const {mail, password} = this.state;
+        const {mail: email, password} = this.state;
 
-        firebase
-        .auth()
-        .signInWithEmailAndPassword(mail,password)
-        .then(user=> {
-            console.log("usuario autenticado")
-        })
-        .catch(error =>{
-            this.setState({message: this.getMEssageByErrorCode(error.code)})
-
-        })
-        .then(() => this.setState({isLoading: false}))
+        this.props.tryLogin({ email, password})
+        
     }
     renderButton() {
         if (this.state.isLoading)
             return <ActivityIndicator/>;
-            
+             
         return (
         <Button 
                     title="Entrar"
@@ -126,3 +119,5 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
     }
 })
+
+export default connect(null , {tryLogin})(LoginPage)
