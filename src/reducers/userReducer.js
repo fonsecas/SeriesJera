@@ -1,13 +1,12 @@
+import {USER_LOGIN_SUCCCESS, USER_LOGOUT} from '../actions'
 
-import { USER_LOGIN_SUCCESS, USER_LOGOUT } from '../actions';
-
-export default function userReduer (state = null, action) {
-    switch(action.type){
-        case USER_LOGIN_SUCCESS:
-          return action.user;
+export default function userReducer(state = null, action){
+    switch (action.type) {
+        case USER_LOGIN_SUCCCESS:
+            return action.user;
         case USER_LOGOUT:
-                return null;
-        defult: 
-            return state;
+            return null;
+        default:
+                return state
     }
 }
