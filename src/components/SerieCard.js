@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 
 
-const SerieCard = ({ serie, isFirstColumn }) => (
-    <View style={[styles.container, isFirstColumn ? styles.firstColumn : styles.lastColumn
+const SerieCard = ({ serie, isFirstColumn, onNavigate }) => (
+	<TouchableOpacity
+		onPress={onNavigate}
+		style={[styles.container, isFirstColumn ? styles.firstColumn : styles.lastColumn
     ]}> 
     <View style={styles.card}>
         <Image 
-            source={{
+            source={{ 
                     uri: serie.img
                 }}
                 aspectRatio={1}
@@ -24,7 +26,7 @@ const SerieCard = ({ serie, isFirstColumn }) => (
                 <Text style={styles.cardTitle}>{serie.title}</Text>
             </View>      
     </View>
-    </View>
+    </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
@@ -49,7 +51,7 @@ const styles = StyleSheet.create({
 	},
 	cardTitleWrapper: {
 		backgroundColor: 'black',
-		height: 50,
+		height: 50, 
 
 		position: 'absolute',
 		bottom: 0,
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
 
 		paddingTop: 10,
 		paddingBottom: 10,
-
+ 
 		paddingLeft: 3,
 		paddingRight: 3,
 
