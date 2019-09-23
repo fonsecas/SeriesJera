@@ -10,10 +10,7 @@ import {
 } from 'react-native';
 import firebase from 'firebase';
 import { connect } from 'react-redux';
-
 import { tryLogin } from '../actions';
-
-
 import FormRow from '../components/FormRow';
 
 class LoginPage extends React.Component {
@@ -38,7 +35,7 @@ class LoginPage extends React.Component {
                 messagingSenderId: "750035580453",
                 appId: "1:750035580453:web:19ab5f51ba30efef92b1cc"
               };
-              // Initialize Firebase
+              // Inicializa Firebase
               firebase.initializeApp(config);
         }
 
@@ -48,6 +45,7 @@ class LoginPage extends React.Component {
 		});
 	}
 
+	//Função para de atutenticação do usuario
 	tryLogin() {
 		this.setState({ isLoading: true, message: '' });
 		const { mail: email, password } = this.state;
@@ -55,8 +53,7 @@ class LoginPage extends React.Component {
 		this.props.tryLogin({ email, password })
 			.then(user => {
 				if (user)
-					return this.props.navigation.replace('Main');
-
+					return this.props.navigation.navigate('App')
 				this.setState({
 					isLoading: false,
 					message: ''
@@ -70,6 +67,7 @@ class LoginPage extends React.Component {
 			});
 	}
 
+	//Função para tratar erro das mensagens no Login do Usuario
 	getMessageByErrorCode(errorCode) {
 		switch (errorCode) {
 			case 'auth/wrong-password':
@@ -80,7 +78,7 @@ class LoginPage extends React.Component {
 				return 'Erro desconhecido';
 		}
 	}
-
+	//Função para renderizar a mensagem de erro ao usuario
 	renderMessage() {
 		const { message } = this.state;
 		if (!message)
@@ -92,7 +90,7 @@ class LoginPage extends React.Component {
 			</View>
 		);
 	}
-
+	//Renderiza  o ActivityIndicator do Botão Login
 	renderButton() {
 		if (this.state.isLoading)
 			return <ActivityIndicator />;

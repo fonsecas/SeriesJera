@@ -9,7 +9,7 @@ const FormRow = props => {
                     first ? styles.first : null,
                     last ? styles.last : null]}>
         {children}
-    </View>
+    </View> 
     )
     }
 
