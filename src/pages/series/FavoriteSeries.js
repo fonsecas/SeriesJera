@@ -1,10 +1,10 @@
 import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
-import Loader from "./../util/Loader";
-import { callRemoteMethod } from "../util/WebServiceHandler";
-import Constants from "./../util/Constants";
-import { renderIf } from "../util/CommonMethods";
-import { customAlert } from "./../util/CommonMethods";
+import Loader from "../../util/Loader";
+import { callRemoteMethod } from "../../util/WebServiceHandler";
+import Constants from "../../util/Constants";
+import { renderIf } from "../../util/CommonMethods";
+import { customAlert } from "../../util/CommonMethods";
 import {Header} from 'react-native-elements'
 import firebase from 'firebase';
 
@@ -32,12 +32,19 @@ class FavoriteSeries extends Component {
                 .database()
                 .ref(`/users/${currentUser.uid}/`)
                 .on('value', snapshot => {
-                    const {series } = snapshot.val()
+                  const result = snapshot.val()
+                  
+                  if(result){
+                    const {series} =  result;
                     const array = Object.values( series );
-                    console.log(array)
+                    console.log(series)
                     this.setState({movieList: array, isLoading: false})
+                  } else {
+                    this.setState({isLoading: false}) 
+
+                  }
                 }) 
-                
+  
         };
   render() {
     return (
@@ -49,6 +56,7 @@ class FavoriteSeries extends Component {
         rightComponent={null}
       />
         {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>No data found.</Text>)}
+        
         {renderIf(
           this.state.movieList.length,
           <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>

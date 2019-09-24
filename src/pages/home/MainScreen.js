@@ -1,11 +1,12 @@
 import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
-import Loader from "./../util/Loader";
-import { callRemoteMethod } from "../util/WebServiceHandler";
-import Constants from "./../util/Constants";
-import { renderIf } from "../util/CommonMethods";
-import { customAlert } from "./../util/CommonMethods";
-import {Header} from 'react-native-elements'
+import Loader from "../../util/Loader";
+import { callRemoteMethod } from "../../util/WebServiceHandler";
+import Constants from "../../util/Constants";
+import { renderIf } from "../../util/CommonMethods";
+import { customAlert } from "../../util/CommonMethods";
+import {Header, Icon} from 'react-native-elements'
+import firebase from 'firebase';
 
 class MainScreen extends Component {
   static navigationOptions = {
@@ -17,7 +18,7 @@ class MainScreen extends Component {
     searchText: "",
     noData: false 
   };
-  
+
   //Função para pesquisar a consulta inserida
   searchButtonPressed = () => {
     if (this.state.searchText.length) {
@@ -39,6 +40,16 @@ class MainScreen extends Component {
       this.setState({ noData: true });
     }
   };
+  logoutUser()  {
+
+      firebase.auth().signOut().then(() => {
+        console.log('desconectado')
+        this.props.navigation.navigate('LoginPage') 
+        
+      }).catch(function(error) {
+        // An error happened.
+      });
+    }
 
   render() {
     return (
@@ -47,7 +58,8 @@ class MainScreen extends Component {
         <Header backgroundColor={'#00796B'}
         leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>SERIES</Text>}
-        rightComponent={null}
+        rightComponent={<Icon name='exit-to-app' type='material' color='#fff'
+        onPress={() => this.logoutUser()} />}
       />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         <View style={{ backgroundColor: Constants.Colors.Grey }}>

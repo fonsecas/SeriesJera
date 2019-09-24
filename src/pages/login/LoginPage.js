@@ -6,12 +6,13 @@ import {
 	StyleSheet,
 	Button,
 	ActivityIndicator,
-	Alert
+	Alert,
+	AsyncStorage
 } from 'react-native';
 import firebase from 'firebase';
 import { connect } from 'react-redux';
-import { tryLogin } from '../actions';
-import FormRow from '../components/FormRow';
+import { tryLogin } from '../../actions';
+import FormRow from '../../components/FormRow'; 
 
 class LoginPage extends React.Component {
 	constructor(props) {
@@ -25,26 +26,12 @@ class LoginPage extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-        var config = {
-                apiKey: "AIzaSyANrg7BYCCXpkT9zo6Mb3CG_BuBc1AfdkU",
-                authDomain: "seriesjera2019.firebaseapp.com",
-                databaseURL: "https://seriesjera2019.firebaseio.com",
-                projectId: "seriesjera2019",
-                storageBucket: "",
-                messagingSenderId: "750035580453",
-                appId: "1:750035580453:web:19ab5f51ba30efef92b1cc"
-              };
-              // Inicializa Firebase
-              firebase.initializeApp(config);
-        }
-
 	onChangeHandler(field, value) {
 		this.setState({
 			[field]: value
 		});
 	}
-
+ 
 	//Função para de atutenticação do usuario
 	tryLogin() {
 		this.setState({ isLoading: true, message: '' });
@@ -52,8 +39,14 @@ class LoginPage extends React.Component {
 
 		this.props.tryLogin({ email, password })
 			.then(user => {
-				if (user)
-					return this.props.navigation.navigate('App')
+				if (user) 
+
+					(async() => {
+
+						await AsyncStorage.setItem('token9', JSON.stringify({'email': email, 'password' :password }))})()
+
+					return this.props.navigation.navigate('App', { user : user });
+
 				this.setState({
 					isLoading: false,
 					message: ''
@@ -102,6 +95,7 @@ class LoginPage extends React.Component {
 	}
 
 	render() {
+		(async() => {await AsyncStorage.clear()})()
 		return (
 			<View style={styles.container}>
 				<FormRow first>
@@ -126,6 +120,9 @@ class LoginPage extends React.Component {
 
 				{ this.renderButton() }
 				{ this.renderMessage() }
+				<Button
+				title="Criar Conta"
+				onPress={() => this.props.navigation.navigate('RegisterPage')}/>
 			</View>
 		)
 	}

@@ -1,5 +1,14 @@
 const BASE_URL = "https://api.themoviedb.org/3/";
 module.exports = {
+   CONFIG: {
+    apiKey: "AIzaSyANrg7BYCCXpkT9zo6Mb3CG_BuBc1AfdkU",
+    authDomain: "seriesjera2019.firebaseapp.com",
+    databaseURL: "https://seriesjera2019.firebaseio.com",
+    projectId: "seriesjera2019",
+    storageBucket: "",
+    messagingSenderId: "750035580453",
+    appId: "1:750035580453:web:19ab5f51ba30efef92b1cc"
+  },
   URL: {
     BASE_URL: "https://api.themoviedb.org/3/",
     IMAGE_URL: "http://image.tmdb.org/t/p/w185",

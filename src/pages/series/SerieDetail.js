@@ -1,9 +1,9 @@
-import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet} from "react-native";
+import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
 import React, { Component } from "react";
-import Constants from "./../util/Constants";
-import { callRemoteMethod } from "../util/WebServiceHandler";
-import Loader from "../util/Loader";
-import {Header, Icon} from 'react-native-elements'
+import Constants from "../../util/Constants";
+import { callRemoteMethod } from "../../util/WebServiceHandler";
+import Loader from "../../util/Loader";
+import { Header, Icon } from 'react-native-elements'
 import firebase from 'firebase'
 
 class SerieDetail extends Component {
@@ -13,8 +13,8 @@ class SerieDetail extends Component {
   };
 
   state = {
-    movieDetails: {}, 
-    isLoading: false, 
+    movieDetails: {},
+    isLoading: false,
     seriesFavorites: [],
     isFavorite: false
   };
@@ -37,78 +37,85 @@ class SerieDetail extends Component {
 
   //Busca as series na lista de favoritos do usuario 
   getSeries = async () => {
-    const {currentUser} = firebase.auth();
-   await firebase
-        .database()
-        .ref(`/users/${currentUser.uid}/`)
-        .on('value', snapshot => {
-            const {series } = snapshot.val()
-            const array = Object.values( series );
-            //console.log(array)
-            this.setState({seriesFavorites: array})
-        }) 
-        
-};
-  //Função que menipula
-  addSerie = async (serieFull, isAdd) => {
-        const {currentUser} = firebase.auth();
-        if(isAdd) {
-            firebase
-            .database()
-            .ref(`/users/${currentUser.uid}/series/${this.state.movieDetails.id}`)
-            .set(this.state.movieDetails) 
-            .then(() => {
-                ToastAndroid.show(
-                    'Adicionado a Lista de Favoritos',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                  );
-            })
-        } else {
-            firebase
-            .database()
-            .ref(`/users/${currentUser.uid}/series/${this.state.movieDetails.id}`)
-            .remove() 
-            .then(() => {
-                ToastAndroid.show(
-                    'Removido da Lista de Favoritos',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                  );
-            })
-        }
-    }
-    renderAddButton() {
-        const {series} = this.state;
-        const {serie} = this.props.navigation.state.params;
+    const { currentUser } = firebase.auth();
+    await firebase
+      .database()
+      .ref(`/users/${currentUser.uid}/`)
+      .on('value', snapshot => {
+        console.log(snapshot.val())
 
-       let isFavorite = false;
-       this.state.seriesFavorites.map((item) => {
-        item.id === this.state.movieDetails.id ? isFavorite = true : null
-         })
-         console.log(this.state.movieDetails)
-         console.log(this.state.seriesFavorites)
-         console.log(isFavorite) 
-         return (
-             isFavorite ? 
-             <Icon name='favorite'
-             type='material'
-             color='#fff'
-             onPress={() => this.addSerie(this.state.movieDetails, false)} /> :
-             <Icon name='favorite-border'
-             type='material'
-             color='#fff'
-             onPress={() => this.addSerie(this.state.movieDetails, true)} />
-         )
-     }
+        const result = snapshot.val()
+        if (result) {
+          const { series } = result;
+          const array = Object.values(series);
+          console.log(series)
+          this.setState({ seriesFavorites: array })
+        }
+
+
+
+      })
+
+  };
+  //Função que adiciona/remove serie do firebase
+  addSerie = async (serieFull, isAdd) => {
+    const { currentUser } = firebase.auth();
+    if (isAdd) {
+      firebase
+        .database()
+        .ref(`/users/${currentUser.uid}/series/${this.state.movieDetails.id}`)
+        .set(this.state.movieDetails)
+        .then(() => {
+          ToastAndroid.show(
+            'Adicionado a Lista de Favoritos',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+        })
+    } else {
+      firebase
+        .database()
+        .ref(`/users/${currentUser.uid}/series/${this.state.movieDetails.id}`)
+        .remove()
+        .then(() => {
+          ToastAndroid.show(
+            'Removido da Lista de Favoritos',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+          this.setState({ isFavorite: false })
+        })
+    }
+  }
+  //Renderiza o botão de adicionar aos favoritos
+  renderAddButton() {
+    const { series } = this.state;
+    const { serie } = this.props.navigation.state.params;
+
+    let isFavorite = false;
+    this.state.seriesFavorites.map((item) => {
+      item.id === this.state.movieDetails.id ? isFavorite = true : null
+    })
+    return (
+      isFavorite ?
+        <Icon name='favorite'
+          type='material'
+          color='#fff'
+          onPress={() => { this.addSerie(this.state.movieDetails, false); isFavorite = false }} /> :
+        <Icon name='favorite-border'
+          type='material'
+          color='#fff'
+          onPress={() => this.addSerie(this.state.movieDetails, true)} />
+    )
+  }
   render() {
     return (
       <View style={{ backgroundColor: Constants.Colors.Grey }}>
-           <Header backgroundColor={'#00796B'}
-                leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
-                centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>{this.state.movieDetails.title}</Text>}
-                rightComponent={this.renderAddButton()}
-            />
+        <Header backgroundColor={'#00796B'}
+          leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
+          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
+          rightComponent={this.renderAddButton()}
+        />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <ScrollView style={Styles.movieCard} showsVerticalScrollIndicator={false}>

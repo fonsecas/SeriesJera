@@ -22,29 +22,30 @@ export const tryLogin = ({ email, password }) => dispatch => {
 			return user;
 		})
 		.catch(error => {
-			if (error.code === 'auth/user-not-found') {
-				return new Promise((resolve, reject) => {
-					Alert.alert(
-						'Usuário não encontrado',
-						'Deseja criar um cadastro com as informações inseridas?',
-						[{
-							text: 'Não',
-							onPress: () => resolve(),
-							style: 'cancel' // IOS
-						}, {
-							text: 'Sim',
-							onPress: () => {
-								firebase
-									.auth()
-									.createUserWithEmailAndPassword(email, password)
-									.then(resolve)
-									.catch(reject)
-							}
-						}],
-						{ cancelable: false }
-					)
-				})
-			}
+			
+			return Promise.reject(error)
+		})
+}
+
+export const registerNewUser = ({ email, password, nome, dataNascimento }) => dispatch => {
+	return firebase
+		.auth()
+		.createUserWithEmailAndPassword(email, password)
+		.then(user => {
+			const { currentUser } = firebase.auth();
+			firebase
+					.database()
+					.ref(`/users/${currentUser.uid}/perfil/${user.user.uid}`)
+					.set({'nome': nome,
+						'dataNascimento': dataNascimento})
+					.then(() => {console.log('foi')})
+
+			const action = userLoginSuccess(user);
+
+			dispatch(action);
+			return user;
+		})
+		.catch(error => {		
 			return Promise.reject(error)
 		})
 }

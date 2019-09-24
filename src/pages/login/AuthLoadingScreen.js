@@ -6,18 +6,35 @@ import {
     ActivityIndicator,
     AsyncStorage
 } from 'react-native'
-
+import firebase from 'firebase';
 class AuthLoadingScreen extends Component {
 
     constructor(){
         super()
-        this.loadApp() 
+        this.loadApp()   
     }
     loadApp = async() => {
-        const userToken = await AsyncStorage.getItem('token')
 
+        const userToken = await AsyncStorage.getItem('token9')
+        
+       if(userToken){
+        var obj = JSON.parse(userToken)
+        console.log(obj) 
+        let email = obj.email.toString();
+        let password = obj.password.toString()
+        this.tryLogin(email, password); 
+       }
         this.props.navigation.navigate(userToken ? 'App' : 'Auth')
     }
+
+    tryLogin = (email, password) =>{
+        return firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
+            .then(() => {
+               console.log('usuario logado')
+            })
+        }
     render () {
         return (
             <View style={styles.container}>
