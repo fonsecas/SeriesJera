@@ -16,7 +16,7 @@ class AuthLoadingScreen extends Component {
     loadApp = async() => {
 
         const userToken = await AsyncStorage.getItem('token9')
-        
+         
        if(userToken){
         var obj = JSON.parse(userToken)
         console.log(obj) 
@@ -27,9 +27,10 @@ class AuthLoadingScreen extends Component {
             .signInWithEmailAndPassword(email, password)
             .then(() => {
                console.log('usuario logado')
-               this.props.navigation.navigate(userToken ? 'App' : 'Auth')
+               
             })
        }
+       this.props.navigation.navigate(userToken ? 'App' : 'Auth')
         
     }
 

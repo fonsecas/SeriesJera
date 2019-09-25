@@ -12,8 +12,10 @@ import {
 import firebase from 'firebase';
 import { connect } from 'react-redux';
 import { registerNewUser } from '../../actions';
-import FormRow from '../../components/FormRow'; 
+import FormRow from '../../components/FormRow';
 import DatePicker from 'react-native-datepicker';
+import styles from "./style";
+
 
 class RegisterPage extends React.Component {
 	constructor(props) {
@@ -21,10 +23,10 @@ class RegisterPage extends React.Component {
 
 		this.state = {
 			mail: '',
-			password: '', 
+			password: '',
 			isLoading: false,
 			message: '',
-			date:""
+			date: ""
 		}
 	}
 
@@ -33,18 +35,19 @@ class RegisterPage extends React.Component {
 			[field]: value
 		});
 	}
- 
+
 	//Função para de atutenticação do usuario
 	registerNewUser() {
 		this.setState({ isLoading: true, message: '' });
-		const { mail: email, password, dataNascimento, nome  } = this.state;
+		const { mail: email, password, dataNascimento, nome } = this.state;
 
 		this.props.registerNewUser({ email, password, nome, dataNascimento })
 			.then(user => {
-				if (user) 
-					(async() => {
-						await AsyncStorage.setItem('token9', JSON.stringify({'email': email, 'password' :password }))})()
-					return this.props.navigation.navigate('App', { user : user });
+				if (user)
+					(async () => {
+						await AsyncStorage.setItem('token9', JSON.stringify({ 'email': email, 'password': password }))
+					})()
+				return this.props.navigation.navigate('App', { user: user });
 
 				this.setState({
 					isLoading: false,
@@ -88,64 +91,70 @@ class RegisterPage extends React.Component {
 			return <ActivityIndicator />;
 		return (
 			<Button
+				buttonStyle={{marginLeft: 10, marginRight: 10}}
 				title="Cadastrar"
-				onPress={() => this.registerNewUser()}/>
+				onPress={() => this.registerNewUser()} />
 		);
 	}
 
 	render() {
-		
+
 		return (
 			<View style={styles.container}>
-				<FormRow first>
-					<TextInput
-						style={styles.input}
-						placeholder="Qual seu nome ?"
-						value={this.state.nome}
-						onChangeText={value => this.onChangeHandler('nome', value)}
-						autoCapitalize="none"
-					 />
-				</FormRow>
-				<FormRow>
+				<TextInput
+					style={styles.loginFormTextInput}
+					placeholder="Qual seu nome ?"
+					value={this.state.nome}
+					onChangeText={value => this.onChangeHandler('nome', value)}
+					autoCapitalize="none"
+				/>
 				<DatePicker
-							style={{width: '100%'}}
-							date={this.state.date} 
-							format="DD-MM-YYYY"
-							mode="date"
-							placeholder="Que dia você nasceu ?"
-							customStyles={{dateInput:{borderWidth: 0}}}
-							onDateChange={(date) => {this.onChangeHandler('dataNascimento', date)}}
-							/>
-				</FormRow>
-				<FormRow first>
-					<TextInput
-						style={styles.input}
-						placeholder="user@mail.com"
-						value={this.state.mail}
-						onChangeText={value => this.onChangeHandler('mail', value)}
-						keyboardType="email-address"
-						autoCapitalize="none"
-					 />
-				</FormRow>
-				<FormRow last>
-					<TextInput
-						style={styles.input}
-						placeholder="******"
-						secureTextEntry
-						value={this.state.password}
-						onChangeText={value => this.onChangeHandler('password', value)}
-					/>
-				</FormRow>
-				
+					style={{height: 43,
+						fontSize: 14,
+						borderRadius: 5,
+						borderWidth: 1,
+						borderColor: '#eaeaea',
+						backgroundColor: '#fafafa',
+						paddingLeft: 10,
+						marginLeft: 15,
+						marginRight: 15,
+						marginTop: 5,
+						marginBottom: 5,
+						width: '93%'}}
+					date={this.state.dataNascimento}
+					format="DD-MM-YYYY"
+					mode="date"
+					placeholder="Que dia você nasceu ?"
+					showIcon={false}
+					customStyles={{ dateInput: { borderWidth: 0 } }}
+					onDateChange={(date) => { this.onChangeHandler('dataNascimento', date) }}
+				/>
+				<TextInput
+					style={styles.loginFormTextInput}
+					placeholder="user@mail.com"
+					value={this.state.mail}
+					onChangeText={value => this.onChangeHandler('mail', value)}
+					keyboardType="email-address"
+					autoCapitalize="none"
+				/>
+				<TextInput
+					style={styles.loginFormTextInput}
+					placeholder="******"
+					secureTextEntry
+					value={this.state.password}
+					onChangeText={value => this.onChangeHandler('password', value)}
+				/>
 
-				{ this.renderButton() }
-				{ this.renderMessage() }
+
+
+				{this.renderButton()}
+				{this.renderMessage()}
 			</View>
 		)
 	}
 }
 
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
 	container: {
 		paddingLeft: 10,
 		paddingRight: 10,
@@ -160,4 +169,4 @@ const styles = StyleSheet.create({
 
 export default connect(null, { registerNewUser })(RegisterPage)
 
-    
+
