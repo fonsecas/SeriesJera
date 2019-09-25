@@ -14,7 +14,8 @@ module.exports = {
     IMAGE_URL: "http://image.tmdb.org/t/p/w185",
     API_KEY: "api_key=b83e15027df50325aa48d0cdc5c9bf30",
     SEARCH_QUERY: "search/movie?query=",
-    PLACEHOLDER_IMAGE: "https://s3-ap-southeast-1.amazonaws.com/popcornsg/placeholder-movieimage.png"
+    PLACEHOLDER_IMAGE: "https://s3-ap-southeast-1.amazonaws.com/popcornsg/placeholder-movieimage.png",
+    POPULAR_FILMS: "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=b83e15027df50325aa48d0cdc5c9bf30"
   },
   Strings: {
     MAIN_TITLE: "Series",
@@ -25,12 +26,13 @@ module.exports = {
     LANGUAGE: "Idioma: ",
     POPULARITY: "Popularidade: ",
     STATUS: "Status: ",
-    RATINGS: "Avaliações: ",
+    RATINGS: "Nota: ",
     BUDGET: "Despesas: ",
     REVENUE: "Receita: ",
     RUNTIME: "Tempo de duração: ",
     OVERVIEW: "Sinopse: ",
-    MSG: "Este campo é obrigatório."
+    MSG: "Este campo é obrigatório.",
+    TOWHATCH: "Assistido:"
   },
   Colors: {
     Cyan: "#02ADAD",

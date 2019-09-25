@@ -1,11 +1,11 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
 import { customAlert } from "../../util/CommonMethods";
-import {Header, Icon} from 'react-native-elements'
+import {Header, Icon, Rating} from 'react-native-elements'
 import firebase from 'firebase';
 
 class MainScreen extends Component {
@@ -18,7 +18,10 @@ class MainScreen extends Component {
     searchText: "",
     noData: false 
   };
+  componentDidMount(){
+    callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
 
+  }
   //Função para pesquisar a consulta inserida
   searchButtonPressed = () => {
     if (this.state.searchText.length) {
@@ -58,8 +61,8 @@ class MainScreen extends Component {
         <Header backgroundColor={'#00796B'}
         leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>SERIES</Text>}
-        rightComponent={<Icon name='exit-to-app' type='material' color='#fff'
-        onPress={() => this.logoutUser()} />}
+        rightComponent={<Icon name='more-vert' type='material' color='#fff'
+        onPress={() => ToastAndroid.show('Em breve...', ToastAndroid.LONG, ToastAndroid.TOP)} />}
       />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         <View style={{ backgroundColor: Constants.Colors.Grey }}>
@@ -113,8 +116,10 @@ class MainScreen extends Component {
                           <Text>{obj.original_language}</Text>
                         </View>
                         <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.POPULARITY}</Text>
-                          <Text>{obj.popularity} %</Text>
+                          <Text>{Constants.Strings.RATINGS}</Text>
+                          <Rating imageSize={20} readonly startingValue={(obj.vote_average/10)*5}/>
+
+
                         </View>
                       </View>
                     </View>

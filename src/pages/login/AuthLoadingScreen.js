@@ -22,19 +22,17 @@ class AuthLoadingScreen extends Component {
         console.log(obj) 
         let email = obj.email.toString();
         let password = obj.password.toString()
-        this.tryLogin(email, password); 
-       }
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth')
-    }
-
-    tryLogin = (email, password) =>{
-        return firebase
+        await firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
             .then(() => {
                console.log('usuario logado')
+               this.props.navigation.navigate(userToken ? 'App' : 'Auth')
             })
-        }
+       }
+        
+    }
+
     render () {
         return (
             <View style={styles.container}>

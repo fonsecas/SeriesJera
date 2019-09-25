@@ -33,14 +33,14 @@ class FavoriteSeries extends Component {
                 .ref(`/users/${currentUser.uid}/`)
                 .on('value', snapshot => {
                   const result = snapshot.val()
-                  
-                  if(result){
-                    const {series} =  result;
-                    const array = Object.values( series );
-                    console.log(series)
+                  const {seriesFavorites} =  result
+                  if(seriesFavorites){
+                    ;
+                    const array = Object.values( seriesFavorites );
+                    //console.log(series)
                     this.setState({movieList: array, isLoading: false})
                   } else {
-                    this.setState({isLoading: false}) 
+                    this.setState({movieList: [], isLoading: false}) 
 
                   }
                 }) 
@@ -48,15 +48,17 @@ class FavoriteSeries extends Component {
         };
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <Header backgroundColor={'#00796B'}
         leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>Meus Favoritos</Text>}
         rightComponent={null}
       />
-        {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>No data found.</Text>)}
-        
+        {renderIf( !this.state.movieList.length, 
+                   <View style={{flex: 1, justifyContent: 'center',  alignItems: 'center'}}>
+                    <Text>Adicone um video aos favoritos</Text>
+                    </View>)}
         {renderIf(
           this.state.movieList.length,
           <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>

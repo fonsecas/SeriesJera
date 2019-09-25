@@ -3,7 +3,7 @@ import {createDrawerNavigator, DrawerActions } from 'react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import LoginPage from './pages/login/LoginPage';
 import FavoriteSeries from './pages/series/FavoriteSeries'
-import SerieDetail from './pages/series/SerieDetail'
+import SerieDetail from './pages/series/SerieDetail' 
 import React, { Component } from 'react'; 
 import { Ionicons } from '@expo/vector-icons'
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native'
@@ -11,6 +11,7 @@ import AuthLoadingScreen from './pages/login/AuthLoadingScreen'
 import { Icon } from 'react-native-elements'
 import MainScreen from './pages/home/MainScreen'
 import RegisterPage from './pages/login/RegisterPage'
+import SideBar from './components/Sidebar'
 
 const AuthStackNavigator = createStackNavigator({
   LoginPage: { 
@@ -57,8 +58,11 @@ const Drawer = createDrawerNavigator(
         drawerIcon: ({tintColor}) => (
           <Icon name="list" style={{color: tintColor}}/>
         )
-      }}
-      },
+      }} 
+      }, 
+      {
+        contentComponent: SideBar
+      }
       
  
  )

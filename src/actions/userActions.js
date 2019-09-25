@@ -35,7 +35,7 @@ export const registerNewUser = ({ email, password, nome, dataNascimento }) => di
 			const { currentUser } = firebase.auth();
 			firebase
 					.database()
-					.ref(`/users/${currentUser.uid}/perfil/${user.user.uid}`)
+					.ref(`/users/${currentUser.uid}/perfil/`)
 					.set({'nome': nome,
 						'dataNascimento': dataNascimento})
 					.then(() => {console.log('foi')})

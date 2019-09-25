@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
+import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet, Switch } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -16,12 +16,22 @@ class SerieDetail extends Component {
     movieDetails: {},
     isLoading: false,
     seriesFavorites: [],
-    isFavorite: false
+    isFavorite: false,
+    switchValue:false,
+    seriesWatched: []
   };
 
+  toggleSwitch = (value) => {
+    //onValueChange of the switch this function will be called
+   this.addSerieWatched(value)
+    this.setState({switchValue: value})
+    //state changes according to switch
+    //which will result in re-render the text
+ }
   componentDidMount() {
     this.getMovieDetails();
-    this.getSeries();
+    this.getSeriesFavorites();
+    
   }
 
   //Função que busca os detalhes do filme selecionado
@@ -33,37 +43,72 @@ class SerieDetail extends Component {
   //Seta a data em movieDetails
   getMovieDetailsCallback = response => {
     this.setState({ movieDetails: response });
+    this.getSeriesWatched();
   };
 
   //Busca as series na lista de favoritos do usuario 
-  getSeries = async () => {
+  getSeriesFavorites = async () => {
     const { currentUser } = firebase.auth();
     await firebase
       .database()
       .ref(`/users/${currentUser.uid}/`)
       .on('value', snapshot => {
-        console.log(snapshot.val())
+        //console.log('resulta', snapshot.val())
 
         const result = snapshot.val()
-        if (result) {
-          const { series } = result;
-          const array = Object.values(series);
-          console.log(series)
+        const { seriesFavorites } = result;
+        if (seriesFavorites) {
+          console.log('result',result)
+          
+          const array = Object.values(seriesFavorites);
+          //console.log('series'  , seriesFavorites)
           this.setState({ seriesFavorites: array })
+        } else {
+         this.setState({ seriesFavorites: []  }) 
+         console.log('vazio')
+         
         }
+      })
 
+  };
 
+  getSeriesWatched = async () => {
+    const { currentUser } = firebase.auth();
+    await firebase
+      .database()
+      .ref(`/users/${currentUser.uid}/`)
+      .on('value', snapshot => {
+        const result = snapshot.val()
+        const { seriesWatched } = result;
 
+        if (seriesWatched) {         
+          const array = Object.values(seriesWatched);
+          let isFavorite = false;
+
+          array.map((item) => {
+            console.log('item', item.id)
+            console.log('detalhe', this.state.movieDetails)
+              if(item.id === this.state.movieDetails.id) {
+                isFavorite = true; 
+              }
+          })
+          console.log('isFavorite ->', isFavorite)
+           this.setState({ switchValue: isFavorite })
+        } else {
+         this.setState({ seriesWatched: []  })
+         console.log('vazio')
+         
+        }
       })
 
   };
   //Função que adiciona/remove serie do firebase
-  addSerie = async (serieFull, isAdd) => {
+  addSerieFavorites = async (serieFull, isAdd) => {
     const { currentUser } = firebase.auth();
     if (isAdd) {
       firebase
         .database()
-        .ref(`/users/${currentUser.uid}/series/${this.state.movieDetails.id}`)
+        .ref(`/users/${currentUser.uid}/seriesFavorites/${this.state.movieDetails.id}`)
         .set(this.state.movieDetails)
         .then(() => {
           ToastAndroid.show(
@@ -75,7 +120,7 @@ class SerieDetail extends Component {
     } else {
       firebase
         .database()
-        .ref(`/users/${currentUser.uid}/series/${this.state.movieDetails.id}`)
+        .ref(`/users/${currentUser.uid}/seriesFavorites/${this.state.movieDetails.id}`)
         .remove()
         .then(() => {
           ToastAndroid.show(
@@ -87,11 +132,38 @@ class SerieDetail extends Component {
         })
     }
   }
+  addSerieWatched = async (isAdd) => {
+    const { currentUser } = firebase.auth();
+    if (isAdd) {
+      firebase
+        .database()
+        .ref(`/users/${currentUser.uid}/seriesWatched/${this.state.movieDetails.id}`)
+        .set(this.state.movieDetails)
+        .then(() => {
+          ToastAndroid.show(
+            'Marcado como Assistido',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+        })
+    } else {
+      firebase
+        .database() 
+        .ref(`/users/${currentUser.uid}/seriesWatched/${this.state.movieDetails.id}`)
+        .remove()
+        .then(() => {
+          ToastAndroid.show(
+            'Marcado como não Assistido',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+          this.setState({ isFavorite: false })
+        })
+    }
+  }
   //Renderiza o botão de adicionar aos favoritos
-  renderAddButton() {
-    const { series } = this.state;
-    const { serie } = this.props.navigation.state.params;
-
+  renderAddButtonFavorites() {  
+    console.log('SERIES', this.state.seriesFavorites)
     let isFavorite = false;
     this.state.seriesFavorites.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
@@ -101,20 +173,30 @@ class SerieDetail extends Component {
         <Icon name='favorite'
           type='material'
           color='#fff'
-          onPress={() => { this.addSerie(this.state.movieDetails, false); isFavorite = false }} /> :
+          onPress={() => { this.addSerieFavorites(this.state.movieDetails, false); isFavorite = false }} /> :
         <Icon name='favorite-border'
           type='material'
           color='#fff'
-          onPress={() => this.addSerie(this.state.movieDetails, true)} />
+          onPress={() => this.addSerieFavorites(this.state.movieDetails, true)} />
     )
   }
+  renderAddButtonWatched() {  
+    // console.log('SERIES', this.state.seriesFavorites)
+    // let isFavorite = false;
+    // this.state.seriesFavorites.map((item) => {
+    //   isFavorite =  item.id === this.state.movieDetails.id ? true : null
+    // })
+    
+  }
+  
+
   render() {
     return (
       <View style={{ backgroundColor: Constants.Colors.Grey }}>
         <Header backgroundColor={'#00796B'}
           leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
-          rightComponent={this.renderAddButton()}
+          rightComponent={this.renderAddButtonFavorites()}
         />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -131,9 +213,10 @@ class SerieDetail extends Component {
             />
             <Text style={{ fontSize: 16, margin: 5, fontWeight: "bold" }}>{this.state.movieDetails.original_title}</Text>
           </View>
-          <View style={{ flexDirection: "row", margin: 10 }}>
-            <Text style={{ flex: 0.5 }}>{Constants.Strings.STATUS}</Text>
-            <Text style={{ flex: 0.5 }}>{this.state.movieDetails.status}</Text>
+           <View style={{ flexDirection: "row", margin: 10 }}>
+            <Text style={{ flex: 0.5 }}>{Constants.Strings.TOWHATCH}</Text>
+            <Switch onValueChange = {this.toggleSwitch}
+                      value = {this.state.switchValue}/>
           </View>
           <View style={{ flexDirection: "row", margin: 10 }}>
             <Text style={{ flex: 0.5 }}>{Constants.Strings.RATINGS}</Text>
@@ -146,14 +229,14 @@ class SerieDetail extends Component {
             <Text style={{ flex: 0.5 }}>{Constants.Strings.POPULARITY}</Text>
             <Text style={{ flex: 0.5 }}>{this.state.movieDetails.popularity}%</Text>
           </View>
-          <View style={{ flexDirection: "row", margin: 10 }}>
+          {/* <View style={{ flexDirection: "row", margin: 10 }}>
             <Text style={{ flex: 0.5 }}>{Constants.Strings.BUDGET}</Text>
             <Text style={{ flex: 0.5 }}>${this.state.movieDetails.budget}</Text>
-          </View>
-          <View style={{ flexDirection: "row", margin: 10 }}>
+          </View> */}
+          {/* <View style={{ flexDirection: "row", margin: 10 }}>
             <Text style={{ flex: 0.5 }}>{Constants.Strings.REVENUE}</Text>
             <Text style={{ flex: 0.5 }}>${this.state.movieDetails.revenue}</Text>
-          </View>
+          </View> */}
           <View style={{ flexDirection: "row", margin: 10 }}>
             <Text style={{ flex: 0.5 }}>{Constants.Strings.RUNTIME}</Text>
             <Text style={{ flex: 0.5 }}>{this.state.movieDetails.runtime} min</Text>
