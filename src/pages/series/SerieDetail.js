@@ -1,11 +1,11 @@
-import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet, Switch } from "react-native";
+import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share, Alert } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Loader from "../../util/Loader";
-import { Header, Icon } from 'react-native-elements'
+import { Header, Icon, Button } from 'react-native-elements'
 import firebase from 'firebase'
-
+ 
 class SerieDetail extends Component {
   static navigationOptions = {
     headerTitle: Constants.Strings.SECONDARY_TITLE,
@@ -147,6 +147,19 @@ class SerieDetail extends Component {
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           );
+          Alert.alert(
+            'Compartilhar',
+            'Deseja mostar aos seus amigos que você assistiu esse filme ?',
+            [
+              {text: 'Compartilhar', onPress: () => this.onShare()},
+              {
+                text: 'Cancelar',
+                onPress: () => null,
+                style: 'cancel',
+              },
+            ],
+            {cancelable: false},
+          );
           this.addSerieFavorites(false, true)
         })
 
@@ -183,7 +196,10 @@ class SerieDetail extends Component {
           color='#fff'
           onPress={() => this.addSerieFavorites(true)} />)
     } else {
-      return null
+      return <Icon name='share'
+      type='material'
+      color='#fff'
+      onPress={() => this.onShare(true)} />
     }
 
   }
@@ -203,11 +219,24 @@ class SerieDetail extends Component {
 
   }
 
-
+  onShare = async () => {
+    Share.share({ 
+      message: `Acabei de assistir o filme ${this.state.movieDetails.original_title}, usando o aplicativo PraVerDepois`, 
+      title: 'Confira o filme que acabei de assistir usanto aplicativo PraVerDepois!',
+      
+    }, { 
+      // Android only:
+      dialogTitle: 'Compartilhar',
+      // iOS only:
+      excludedActivityTypes: [
+        'com.apple.UIKit.activity.PostToTwitter'
+      ]
+    }) 
+  };
   render() {
     return (
       <View style={{ backgroundColor: Constants.Colors.Grey }}>
-        <Header backgroundColor={'#00796B'}
+        <Header backgroundColor={'#3F51B5'}
           leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
           rightComponent={this.renderAddButtonFavorites()}

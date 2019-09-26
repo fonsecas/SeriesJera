@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, ScrollView,  Image, ImageBackground, AsyncStorage, Text, TouchableOpacity,ToastAndroid, SafeAreaView, Platform} from 'react-native';
+import { StyleSheet, View, ScrollView,  Image, ImageBackground, SafeAreaViewComponent, AsyncStorage, Text, TouchableOpacity,ToastAndroid, SafeAreaView, Platform} from 'react-native';
 import {DrawerNavigatorItems } from 'react-navigation-drawer';
 import Moment from 'moment';
 import firebase from 'firebase'
@@ -8,7 +8,7 @@ class SideBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      infoClient: {}, 
+      userInfo: {}, 
       userDetail: {}
     };
    this.json = {}
@@ -19,6 +19,7 @@ class SideBar extends Component {
 
  getUserPerfil = async () => {
     const {currentUser} = firebase.auth();
+    //console.log('usuario',currentUser)
     await firebase
     .database()
     .ref(`/users/${currentUser.uid}/`)
@@ -27,7 +28,8 @@ class SideBar extends Component {
       const {perfil} =  result
       if(perfil){
           console.log(perfil)
-        this.setState({userDetail: perfil})
+        this.setState({userDetail: perfil,
+                      userInfo: currentUser})
       } else {
         this.setState({userDetail: []}) 
 
@@ -48,16 +50,18 @@ class SideBar extends Component {
       
       <View style={{flex: 1, backgroundColor:"white"}}> 
       
-      <ImageBackground source={require('../img/background.fw.png')} style={{paddingTop:60,paddingBottom: 10, paddingHorizontal: 10, elevation: 1}}>
+      <View style={{height: 180, alignItems: 'center', justifyContent: 'center', backgroundColor: '#3F51B5' }}>
         <TouchableOpacity onPress={() =>  ToastAndroid.show(
             'Em breve...',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           )}>
-        <Image source={require('../img/default-user.png')} style={{height: 60, width: 60, borderRadius: Platform.OS === "ios" ? 10 : 60 }}/>
+        <Image source={require('../img/default-user.png')} style={{borderWidth: 2, borderColor: 'white',height: 60, width: 60, borderRadius: Platform.OS === "ios" ? 10 : 60 }}/>
         </TouchableOpacity>
         <Text style={{fontSize: 18, color: 'white', marginTop: 5}}>{this.state.userDetail.nome}</Text>
-        </ImageBackground>
+        <Text style={{fontSize: 12, color: 'white', marginTop: 5}}>{this.state.userInfo.email}</Text>
+
+        </View>
        
       <ScrollView>
          

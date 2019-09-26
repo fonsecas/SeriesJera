@@ -50,7 +50,7 @@ class WatchList extends Component {
     return (
       <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#00796B'}
+        <Header backgroundColor={'#3F51B5'}
         leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>LISTA PARA ASSISTIR</Text>}
         rightComponent={null}

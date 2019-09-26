@@ -4,7 +4,6 @@ import {
 	TextInput,
 	Text,
 	StyleSheet,
-	Button,
 	ActivityIndicator,
 	Alert,
 	AsyncStorage
@@ -15,6 +14,7 @@ import { registerNewUser } from '../../actions';
 import FormRow from '../../components/FormRow';
 import DatePicker from 'react-native-datepicker';
 import styles from "./style";
+import {Button} from 'react-native-elements'
 
 
 class RegisterPage extends React.Component {
@@ -91,7 +91,12 @@ class RegisterPage extends React.Component {
 			return <ActivityIndicator />;
 		return (
 			<Button
-				buttonStyle={{marginLeft: 10, marginRight: 10}}
+				buttonStyle={{marginLeft: 15,
+					marginRight: 15,
+					backgroundColor: '#3F51B5',
+					borderRadius: 5,
+					height: 45,
+					marginTop: 10}}
 				title="Cadastrar"
 				onPress={() => this.registerNewUser()} />
 		);
@@ -100,7 +105,7 @@ class RegisterPage extends React.Component {
 	render() {
 
 		return (
-			<View style={styles.container}>
+			<View style={style.container}>
 				<TextInput
 					style={styles.loginFormTextInput}
 					placeholder="Qual seu nome ?"
@@ -126,7 +131,7 @@ class RegisterPage extends React.Component {
 					mode="date"
 					placeholder="Que dia você nasceu ?"
 					showIcon={false}
-					customStyles={{ dateInput: { borderWidth: 0 } }}
+					customStyles={{ dateInput: { borderWidth: 0, alignItems: "flex-start" } }}
 					onDateChange={(date) => { this.onChangeHandler('dataNascimento', date) }}
 				/>
 				<TextInput
@@ -156,8 +161,11 @@ class RegisterPage extends React.Component {
 
 const style = StyleSheet.create({
 	container: {
+		flex: 1,
+		paddingTop: 30,
 		paddingLeft: 10,
 		paddingRight: 10,
+		backgroundColor: '#f9f9f9'
 	},
 	input: {
 		paddingLeft: 5,

@@ -6,6 +6,7 @@ import {
 	StyleSheet,
 	ActivityIndicator,
 	Alert,
+	Image,
 	AsyncStorage,
 	Keyboard,
 	TouchableWithoutFeedback,
@@ -108,10 +109,10 @@ class LoginPage extends Component {
 				<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 					<View style={styles.loginScreenContainer}>
 						<View style={styles.loginFormView}>
-							<Text style={styles.logoText}>Jera Series</Text>
+							<Text style={styles.logoText}>PraVerDepois</Text>
 							<TextInput
 								style={styles.loginFormTextInput}
-								placeholder="user@mail.com"
+								placeholder="user@mail.com" 
 								value={this.state.mail}
 								onChangeText={value => this.onChangeHandler('mail', value)}
 								keyboardType="email-address"
@@ -133,6 +134,7 @@ class LoginPage extends Component {
 							<Button
 								//buttonStyle={styles.fbLoginButton}
 									buttonStyle={{marginTop: 100}}
+									titleStyle={{color:'white'}}
 								onPress={() => this.onFbLoginPress()}
 								title="Login with Facebook"
 								type="clear"

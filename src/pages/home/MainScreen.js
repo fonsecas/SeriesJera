@@ -83,17 +83,17 @@ class MainScreen extends Component {
     return (
       <View style={{ flex: 1 }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#00796B'}
-        leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
+        <Header backgroundColor={'#3F51B5'}
+        leftComponent={{ icon: 'menu', underlayColor: '#3F51B5', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>SERIES</Text>}
-        rightComponent={<Icon name='more-vert' type='material' color='#fff'
+        rightComponent={<Icon name='more-vert' underlayColor='#3F51B5' type='material' color='#fff' 
         onPress={() => ToastAndroid.show('Em breve...', ToastAndroid.LONG, ToastAndroid.TOP)} />}
       />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         <View style={{ backgroundColor: Constants.Colors.Grey }}>
           <View style={Styles.cardView}>
             <View style={{ margin: 10 }}>
-              <TextInput
+              <TextInput 
                 placeholder={Constants.Strings.PLACEHOLDER}
                 onChangeText={text => this.setState({ searchText: text })}
                 underlineColorAndroid={Constants.Colors.Transparent}
@@ -121,6 +121,7 @@ class MainScreen extends Component {
                 })
                 return (
                   <TouchableOpacity
+                   activeOpacity={1}
                     onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
                     key={i}
                     style={{ margin: 10, marginBottom: 5 }}>
@@ -176,7 +177,7 @@ const Styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     padding: 5,
-    backgroundColor: "#02ADAD",
+    backgroundColor: "#3F51B5",
     width: 150,
     borderRadius: 10
   },

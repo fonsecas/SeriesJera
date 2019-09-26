@@ -17,28 +17,33 @@ const AuthStackNavigator = createStackNavigator({
   LoginPage: { 
     screen: LoginPage,
     navigationOptions: {
+      header: null,
       title: 'Bem Vindo',
       headerStyle: {
-        backgroundColor: "#00796B",
-        color: 'white'
+        backgroundColor: "#3897f1",
+        color: 'white',
+        alignContent: 'center'
       },
       headerTitleStyle: {
         color: 'white'
           }
-    }
+      
+    },
     },
     RegisterPage: { 
       screen: RegisterPage,
+      
       navigationOptions: {
         title: 'Criar Conta',
         headerStyle: {
-          backgroundColor: "#00796B",
-          color: 'white'
+          backgroundColor: "#3F51B5",
+          color: 'white',
+          elevation: 1
         },
         headerTitleStyle: {
           color: 'white'
             },
-        headerTintColor: 'white'
+        headerTintColor: 'white',
       }
       },
 
@@ -63,7 +68,7 @@ const Drawer = createDrawerNavigator(
       'Já Assisti': { screen: WatchedList, 
         navigationOptions: {
           drawerIcon: ({tintColor}) => (
-            <Icon name="playlist-play" style={{color: tintColor}}/>
+            <Icon name="playlist-add-check" style={{color: tintColor}}/>
           )
         }}, 
       }, 

@@ -5,7 +5,12 @@ const { StyleSheet } = React;
 export default {
 
 containerView: {
+ // alignItems: 'center',
   flex: 1,
+  //justifyContent: 'center',
+  backgroundColor: '#3897f1',
+  
+  
 },
 loginScreenContainer: {
   flex: 1,
@@ -16,6 +21,7 @@ logoText: {
   marginTop: 150,
   marginBottom: 30,
   textAlign: 'center',
+  color: 'white'
 },
 loginFormView: {
   flex: 1
@@ -27,6 +33,7 @@ loginFormTextInput: {
   borderWidth: 1,
   borderColor: '#eaeaea',
   backgroundColor: '#fafafa',
+  color: '#757575',
   paddingLeft: 10,
   marginLeft: 15,
   marginRight: 15,
@@ -37,7 +44,7 @@ loginFormTextInput: {
 loginButton: {
   marginLeft: 15,
   marginRight: 15,
-  backgroundColor: '#3897f1',
+  backgroundColor: '#3F51B5',
   borderRadius: 5,
   height: 45,
   marginTop: 10,
@@ -45,6 +52,6 @@ loginButton: {
 fbLoginButton: {
   height: 45,
   marginTop: 10,
-  color: '#3897f1', 
+  color: '#303F9F', 
 },
 };
