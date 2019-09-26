@@ -15,7 +15,7 @@ class SerieDetail extends Component {
   state = {
     movieDetails: {},
     isLoading: false,
-    seriesFavorites: [],
+    whatchlist: [],
     isFavorite: false,
     switchValue:false,
     seriesWatched: []
@@ -30,7 +30,7 @@ class SerieDetail extends Component {
  }
   componentDidMount() {
     this.getMovieDetails();
-    this.getSeriesFavorites();
+    this.getWhatchlist();
     
   }
 
@@ -47,7 +47,7 @@ class SerieDetail extends Component {
   };
 
   //Busca as series na lista de favoritos do usuario 
-  getSeriesFavorites = async () => {
+  getWhatchlist= async () => {
     const { currentUser } = firebase.auth();
     await firebase
       .database()
@@ -56,15 +56,15 @@ class SerieDetail extends Component {
         //console.log('resulta', snapshot.val())
 
         const result = snapshot.val()
-        const { seriesFavorites } = result;
-        if (seriesFavorites) {
+        const { whatchlist } = result;
+        if (whatchlist) {
           console.log('result',result)
           
-          const array = Object.values(seriesFavorites);
+          const array = Object.values(whatchlist);
           //console.log('series'  , seriesFavorites)
-          this.setState({ seriesFavorites: array })
+          this.setState({ whatchlist: array })
         } else {
-         this.setState({ seriesFavorites: []  }) 
+         this.setState({ whatchlist: []  }) 
          console.log('vazio')
          
         }
@@ -108,11 +108,11 @@ class SerieDetail extends Component {
     if (isAdd) {
       firebase
         .database()
-        .ref(`/users/${currentUser.uid}/seriesFavorites/${this.state.movieDetails.id}`)
+        .ref(`/users/${currentUser.uid}/whatchlist/${this.state.movieDetails.id}`)
         .set(this.state.movieDetails)
         .then(() => {
           ToastAndroid.show(
-            'Adicionado a Lista de Favoritos',
+            'Marcado para assistir',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           );
@@ -120,11 +120,11 @@ class SerieDetail extends Component {
     } else {
       firebase
         .database()
-        .ref(`/users/${currentUser.uid}/seriesFavorites/${this.state.movieDetails.id}`)
+        .ref(`/users/${currentUser.uid}/whatchlist/${this.state.movieDetails.id}`)
         .remove()
         .then(() => {
           ToastAndroid.show(
-            'Removido da Lista de Favoritos',
+            'Desmarcado para assistir',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           );
@@ -163,18 +163,18 @@ class SerieDetail extends Component {
   }
   //Renderiza o botão de adicionar aos favoritos
   renderAddButtonFavorites() {  
-    console.log('SERIES', this.state.seriesFavorites)
+    console.log('SERIES', this.state.whatchlist)
     let isFavorite = false;
-    this.state.seriesFavorites.map((item) => {
+    this.state.whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
     return (
       isFavorite ?
-        <Icon name='favorite'
+        <Icon name='check-box'
           type='material'
           color='#fff'
           onPress={() => { this.addSerieFavorites(this.state.movieDetails, false); isFavorite = false }} /> :
-        <Icon name='favorite-border'
+        <Icon name='check-box-outline-blank'
           type='material'
           color='#fff'
           onPress={() => this.addSerieFavorites(this.state.movieDetails, true)} />

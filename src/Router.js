@@ -2,7 +2,7 @@ import { createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createDrawerNavigator, DrawerActions } from 'react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import LoginPage from './pages/login/LoginPage';
-import FavoriteSeries from './pages/series/FavoriteSeries'
+import WatchList from './pages/series/WatchList'
 import SerieDetail from './pages/series/SerieDetail' 
 import React, { Component } from 'react'; 
 import { Ionicons } from '@expo/vector-icons'
@@ -54,10 +54,10 @@ const Drawer = createDrawerNavigator(
                 ),
               },
             },
-    Favoritos: { screen: FavoriteSeries, 
+    'Para Assistir': { screen: WatchList, 
       navigationOptions: {
         drawerIcon: ({tintColor}) => (
-          <Icon name="list" style={{color: tintColor}}/>
+          <Icon name="playlist-play" style={{color: tintColor}}/>
         )
       }} 
       }, 

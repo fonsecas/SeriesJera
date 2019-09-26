@@ -8,7 +8,7 @@ import { customAlert } from "../../util/CommonMethods";
 import {Header} from 'react-native-elements'
 import firebase from 'firebase';
 
-class FavoriteSeries extends Component {
+class WhatchedList extends Component {
   static navigationOptions = {
     headerTitle: Constants.Strings.MAIN_TITLE
   };
@@ -33,10 +33,10 @@ class FavoriteSeries extends Component {
                 .ref(`/users/${currentUser.uid}/`)
                 .on('value', snapshot => {
                   const result = snapshot.val()
-                  const {seriesFavorites} =  result
-                  if(seriesFavorites){
+                  const {seriesWatched} =  result
+                  if(seriesWatched){
                     ;
-                    const array = Object.values( seriesFavorites );
+                    const array = Object.values( seriesWatched );
                     //console.log(series)
                     this.setState({movieList: array, isLoading: false})
                   } else {
@@ -129,4 +129,4 @@ const Styles = StyleSheet.create({
     image: { width: 120, height: 180, marginLeft: 5, marginRight: 20 },
     rowView: { flexDirection: "row", marginTop: 10 }
   })
-export default FavoriteSeries;
+export default WhatchedList;

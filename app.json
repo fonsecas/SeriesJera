@@ -24,7 +24,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gabrielfonseca.seriesJera"
+    },
+    "android": {
+      "package": "com.gabrielfonseca.seriesJera"
     }
   }
 }
