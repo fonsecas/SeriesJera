@@ -5,7 +5,7 @@ import LoginPage from './pages/login/LoginPage';
 import WatchList from './pages/series/WatchList'
 import SerieDetail from './pages/series/SerieDetail' 
 import React, { Component } from 'react'; 
-import { Ionicons } from '@expo/vector-icons'
+import WatchedList from './pages/series/WhatchedList'
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native'
 import AuthLoadingScreen from './pages/login/AuthLoadingScreen'
 import { Icon } from 'react-native-elements'
@@ -59,7 +59,13 @@ const Drawer = createDrawerNavigator(
         drawerIcon: ({tintColor}) => (
           <Icon name="playlist-play" style={{color: tintColor}}/>
         )
-      }} 
+      }}, 
+      'Já Assisti': { screen: WatchedList, 
+        navigationOptions: {
+          drawerIcon: ({tintColor}) => (
+            <Icon name="playlist-play" style={{color: tintColor}}/>
+          )
+        }}, 
       }, 
       {
         contentComponent: SideBar

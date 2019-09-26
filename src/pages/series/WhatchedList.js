@@ -52,7 +52,7 @@ class WhatchedList extends Component {
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <Header backgroundColor={'#00796B'}
         leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
-        centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>Meus Favoritos</Text>}
+        centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>LISTA JÁ ASSISTIDOS</Text>}
         rightComponent={null}
       />
         {renderIf( !this.state.movieList.length, 

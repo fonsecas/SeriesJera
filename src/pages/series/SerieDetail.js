@@ -17,21 +17,21 @@ class SerieDetail extends Component {
     isLoading: false,
     whatchlist: [],
     isFavorite: false,
-    switchValue:false,
+    switchValue: false,
     seriesWatched: []
   };
 
   toggleSwitch = (value) => {
     //onValueChange of the switch this function will be called
-   this.addSerieWatched(value)
-    this.setState({switchValue: value})
+    this.addSerieWatched(value)
+    this.setState({ switchValue: value })
     //state changes according to switch
     //which will result in re-render the text
- }
+  }
   componentDidMount() {
     this.getMovieDetails();
     this.getWhatchlist();
-    
+
   }
 
   //Função que busca os detalhes do filme selecionado
@@ -47,7 +47,7 @@ class SerieDetail extends Component {
   };
 
   //Busca as series na lista de favoritos do usuario 
-  getWhatchlist= async () => {
+  getWhatchlist = async () => {
     const { currentUser } = firebase.auth();
     await firebase
       .database()
@@ -58,15 +58,15 @@ class SerieDetail extends Component {
         const result = snapshot.val()
         const { whatchlist } = result;
         if (whatchlist) {
-          console.log('result',result)
-          
+          console.log('result', result)
+
           const array = Object.values(whatchlist);
           //console.log('series'  , seriesFavorites)
           this.setState({ whatchlist: array })
         } else {
-         this.setState({ whatchlist: []  }) 
-         console.log('vazio')
-         
+          this.setState({ whatchlist: [] })
+          console.log('vazio')
+
         }
       })
 
@@ -81,29 +81,29 @@ class SerieDetail extends Component {
         const result = snapshot.val()
         const { seriesWatched } = result;
 
-        if (seriesWatched) {         
+        if (seriesWatched) {
           const array = Object.values(seriesWatched);
           let isFavorite = false;
 
           array.map((item) => {
             console.log('item', item.id)
             console.log('detalhe', this.state.movieDetails)
-              if(item.id === this.state.movieDetails.id) {
-                isFavorite = true; 
-              }
+            if (item.id === this.state.movieDetails.id) {
+              isFavorite = true;
+            }
           })
           console.log('isFavorite ->', isFavorite)
-           this.setState({ switchValue: isFavorite })
+          this.setState({ switchValue: isFavorite })
         } else {
-         this.setState({ seriesWatched: []  })
-         console.log('vazio')
-         
+          this.setState({ seriesWatched: [] })
+          console.log('vazio')
+
         }
       })
 
   };
   //Função que adiciona/remove serie do firebase
-  addSerieFavorites = async (serieFull, isAdd) => {
+  addSerieFavorites = async (isAdd, hideToast) => {
     const { currentUser } = firebase.auth();
     if (isAdd) {
       firebase
@@ -116,18 +116,20 @@ class SerieDetail extends Component {
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           );
+
         })
+
     } else {
       firebase
         .database()
         .ref(`/users/${currentUser.uid}/whatchlist/${this.state.movieDetails.id}`)
         .remove()
         .then(() => {
-          ToastAndroid.show(
+          !hideToast ? ToastAndroid.show(
             'Desmarcado para assistir',
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
-          );
+          ) : null;
           this.setState({ isFavorite: false })
         })
     }
@@ -145,10 +147,12 @@ class SerieDetail extends Component {
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           );
+          this.addSerieFavorites(false, true)
         })
+
     } else {
       firebase
-        .database() 
+        .database()
         .ref(`/users/${currentUser.uid}/seriesWatched/${this.state.movieDetails.id}`)
         .remove()
         .then(() => {
@@ -162,33 +166,43 @@ class SerieDetail extends Component {
     }
   }
   //Renderiza o botão de adicionar aos favoritos
-  renderAddButtonFavorites() {  
+  renderAddButtonFavorites() {
     console.log('SERIES', this.state.whatchlist)
     let isFavorite = false;
     this.state.whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
-    return (
-      isFavorite ?
+    if (!this.state.switchValue) {
+      return (isFavorite ?
         <Icon name='check-box'
           type='material'
           color='#fff'
-          onPress={() => { this.addSerieFavorites(this.state.movieDetails, false); isFavorite = false }} /> :
+          onPress={() => { this.addSerieFavorites(false); isFavorite = false }} /> :
         <Icon name='check-box-outline-blank'
           type='material'
           color='#fff'
-          onPress={() => this.addSerieFavorites(this.state.movieDetails, true)} />
-    )
+          onPress={() => this.addSerieFavorites(true)} />)
+    } else {
+      return null
+    }
+
   }
-  renderAddButtonWatched() {  
-    // console.log('SERIES', this.state.seriesFavorites)
-    // let isFavorite = false;
-    // this.state.seriesFavorites.map((item) => {
-    //   isFavorite =  item.id === this.state.movieDetails.id ? true : null
-    // })
-    
+  renderAddButtonWatched() {
+    let isFavorite = false;
+    this.state.whatchlist.map((item) => {
+      item.id === this.state.movieDetails.id ? isFavorite = true : null
+    })
+    return (
+      <View style={{ flexDirection: "row", margin: 10 }}>
+        <Text style={{ flex: 0.5 }}>{Constants.Strings.TOWHATCH}</Text>
+        <Switch onValueChange={this.toggleSwitch}
+          disabled={!isFavorite}
+          value={this.state.switchValue} />
+      </View>)
+
+
   }
-  
+
 
   render() {
     return (
@@ -213,11 +227,7 @@ class SerieDetail extends Component {
             />
             <Text style={{ fontSize: 16, margin: 5, fontWeight: "bold" }}>{this.state.movieDetails.original_title}</Text>
           </View>
-           <View style={{ flexDirection: "row", margin: 10 }}>
-            <Text style={{ flex: 0.5 }}>{Constants.Strings.TOWHATCH}</Text>
-            <Switch onValueChange = {this.toggleSwitch}
-                      value = {this.state.switchValue}/>
-          </View>
+          {this.renderAddButtonWatched()}
           <View style={{ flexDirection: "row", margin: 10 }}>
             <Text style={{ flex: 0.5 }}>{Constants.Strings.RATINGS}</Text>
             <Text style={{ flex: 0.5 }}>
@@ -229,14 +239,6 @@ class SerieDetail extends Component {
             <Text style={{ flex: 0.5 }}>{Constants.Strings.POPULARITY}</Text>
             <Text style={{ flex: 0.5 }}>{this.state.movieDetails.popularity}%</Text>
           </View>
-          {/* <View style={{ flexDirection: "row", margin: 10 }}>
-            <Text style={{ flex: 0.5 }}>{Constants.Strings.BUDGET}</Text>
-            <Text style={{ flex: 0.5 }}>${this.state.movieDetails.budget}</Text>
-          </View> */}
-          {/* <View style={{ flexDirection: "row", margin: 10 }}>
-            <Text style={{ flex: 0.5 }}>{Constants.Strings.REVENUE}</Text>
-            <Text style={{ flex: 0.5 }}>${this.state.movieDetails.revenue}</Text>
-          </View> */}
           <View style={{ flexDirection: "row", margin: 10 }}>
             <Text style={{ flex: 0.5 }}>{Constants.Strings.RUNTIME}</Text>
             <Text style={{ flex: 0.5 }}>{this.state.movieDetails.runtime} min</Text>

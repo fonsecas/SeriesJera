@@ -5,7 +5,7 @@ import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
 import { customAlert } from "../../util/CommonMethods";
-import {Header, Icon, Rating} from 'react-native-elements'
+import {Header, Icon, Rating, Badge} from 'react-native-elements'
 import firebase from 'firebase';
 
 class MainScreen extends Component {
@@ -16,11 +16,13 @@ class MainScreen extends Component {
     movieList: [], 
     isLoading: false, 
     searchText: "",
-    noData: false 
+    noData: false,
+    switchValue: false,
+    watchedList: []
   };
   componentDidMount(){
     callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
-
+    
   }
   //Função para pesquisar a consulta inserida
   searchButtonPressed = () => {
@@ -37,7 +39,9 @@ class MainScreen extends Component {
   searchCallback = response => {
     if (response.results.length) {
       this.setState({ noData: false });
+      this.getSeriesWatched();
       this.setState({ movieList: response.results });
+      
     } else {
       this.setState({ movieList: [] });
       this.setState({ noData: true });
@@ -53,8 +57,29 @@ class MainScreen extends Component {
         // An error happened.
       });
     }
+    getSeriesWatched = async () => {
+      const { currentUser } = firebase.auth();
+      await firebase
+        .database()
+        .ref(`/users/${currentUser.uid}/`)
+        .on('value', snapshot => {
+          const result = snapshot.val()
+          const { seriesWatched } = result;
+  
+          if (seriesWatched) {
+            const array = Object.values(seriesWatched);
+            
+            this.setState({ watchedList: array })
+          } else {
+            this.setState({ watchedList: [] })
+  
+          }
+        })
+  
+    };
 
   render() {
+    console.log(this.state.movieList)
     return (
       <View style={{ flex: 1 }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -82,12 +107,18 @@ class MainScreen extends Component {
             </View>
           </View>
         </View>
-        {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>No data found.</Text>)}
+        {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>Nenhum filme encontrado.</Text>)}
         {renderIf(
           this.state.movieList.length,
           <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
             <View>
               {this.state.movieList.map(function(obj, i) {
+                let isFavorite = false;
+                this.state.watchedList.map((item) => {
+                  if (item.id === obj.id) {
+                    isFavorite = true;
+                  }
+                })
                 return (
                   <TouchableOpacity
                     onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
@@ -118,8 +149,9 @@ class MainScreen extends Component {
                         <View style={Styles.rowView}>
                           <Text>{Constants.Strings.RATINGS}</Text>
                           <Rating imageSize={20} readonly startingValue={(obj.vote_average/10)*5}/>
-
-
+                        </View>
+                        <View style={{ flexDirection: "row", marginTop: 10, alignItems: 'flex-end' }}>
+                            {isFavorite ? <Badge badgeStyle={{paddingHorizontal: 5, paddingVertical: 10}}value="Assistido" status="success" /> : null}
                         </View>
                       </View>
                     </View>
