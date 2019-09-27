@@ -57,7 +57,7 @@ class WhatchedList extends Component {
       />
         {renderIf( !this.state.movieList.length, 
                    <View style={{flex: 1, justifyContent: 'center',  alignItems: 'center'}}>
-                    <Text>Adicone um video aos favoritos</Text>
+                    <Text>Ops.. Parece que você não assistiu nenhum filme ainda! :(</Text>
                     </View>)}
         {renderIf(
           this.state.movieList.length,

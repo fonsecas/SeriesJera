@@ -57,7 +57,7 @@ class WatchList extends Component {
       />
         {renderIf( !this.state.movieList.length, 
                    <View style={{flex: 1, justifyContent: 'center',  alignItems: 'center'}}>
-                    <Text>Adicone um filme à sua lista</Text>
+                    <Text>Adicone um filme à para assistir</Text>
                     </View>)}
         {renderIf(
           this.state.movieList.length,

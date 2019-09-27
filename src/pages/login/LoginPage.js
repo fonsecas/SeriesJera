@@ -10,14 +10,16 @@ import {
 	AsyncStorage,
 	Keyboard,
 	TouchableWithoutFeedback,
-	KeyboardAvoidingView
+	KeyboardAvoidingView,
+	ToastAndroid
 } from 'react-native';
 import styles from "./style";
 import firebase from 'firebase';
 import { connect } from 'react-redux';
 import { tryLogin } from '../../actions';
 import FormRow from '../../components/FormRow';
-import { Button } from 'react-native-elements'
+import { Button } from 'react-native-elements';
+import * as Facebook from 'expo-facebook';
 
 class LoginPage extends Component {
 	constructor(props) {
@@ -68,11 +70,14 @@ class LoginPage extends Component {
 
 	//Função para tratar erro das mensagens no Login do Usuario
 	getMessageByErrorCode(errorCode) {
+		console.log(errorCode)
 		switch (errorCode) {
 			case 'auth/wrong-password':
 				return 'Senha incorreta';
 			case 'auth/user-not-found':
 				return 'Usuário não encontrado';
+			case 'auth/invalid-email':
+				return 'Insira um e-mail válido'
 			default:
 				return 'Erro desconhecido';
 		}
@@ -85,7 +90,7 @@ class LoginPage extends Component {
 
 		return (
 			<View>
-				<Text>{message}</Text>
+				<Text style={{color: 'red', textAlign: 'center', marginTop: 10, marginBottom: 10}}>{message}</Text>
 			</View>
 		);
 	}
@@ -100,7 +105,58 @@ class LoginPage extends Component {
 				onPress={() => this.tryLogin()} />
 		);
 	}
+	logIn = async () => {
+	
+		  const {
+			type,
+			token,
+			expires,
+			permissions, 
+			declinedPermissions,
+		  } = await Facebook.logInWithReadPermissionsAsync('2662826547095358', {
+			permissions: ['public_profile', 'email'],
+		  });
+		  if (type === 'success') {
+			// Get the user's name using Facebook's Graph API 
+			const response = await fetch('https://graph.facebook.com/v2.5/me?fields=email,id,name&access_token=' + token)
+			.then((response) => response.json())
+			.then((json) => {
+				const credential = firebase.auth.FacebookAuthProvider.credential(token); 
 
+					console.log('rspondese', json)
+					console.log('cdredencital', credential) 
+						// Sign in with credential from the Facebook user.
+					firebase.auth().signInWithCredential(credential).catch((error) => {
+						console.log(error)
+						}); 
+						
+					const { currentUser } =  firebase.auth(); 
+					console.log(currentUser)
+					firebase
+							.database()
+							.ref(`/users/${currentUser.uid}/perfil/`)
+							.set({'nome': currentUser.displayName})
+							.then(() => {
+								(async () => {
+
+									await AsyncStorage.setItem('token9', JSON.stringify({ 'token': token}))
+								})()
+							}) 
+							 
+					
+ 
+				return this.props.navigation.navigate('App');	
+					
+			})
+			.catch(() => {
+			  reject('ERROR GETTING DATA FROM FACEBOOK') 
+			})
+			
+		  } else { 
+			// type === 'cancel'
+		  }
+		 
+	  }
 	render() {
 		(async () => { await AsyncStorage.clear() })()
 		return (
@@ -125,17 +181,20 @@ class LoginPage extends Component {
 								value={this.state.password}
 								onChangeText={value => this.onChangeHandler('password', value)}
 							/>
+
+							{ this.renderMessage()} 
+
 							{this.renderButton()}
 							<Button
 							buttonStyle={styles.loginButton}
 							title="Criar Conta"
 							onPress={() => this.props.navigation.navigate('RegisterPage')}/>
-							{ this.renderMessage()} 
+							
 							<Button
 								//buttonStyle={styles.fbLoginButton}
-									buttonStyle={{marginTop: 100}}
+									buttonStyle={{marginTop: 100}} 
 									titleStyle={{color:'white'}}
-								onPress={() => this.onFbLoginPress()}
+								onPress={() => this.logIn()}
 								title="Login with Facebook"
 								type="clear"
 								//color="#3897f1"
@@ -155,20 +214,7 @@ class LoginPage extends Component {
 	onLoginPress() {
   
 	}
-  
-	async onFbLoginPress() {
-	  const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(appId, {
-		permissions: ['public_profile', 'email'],
-	  });
-	  if (type === 'success') {
-		const response = await fetch(
-		  `https://graph.facebook.com/me?access_token=${token}`);
-		Alert.alert(
-		  'Logged in!',
-		  `Hi ${(await response.json()).name}!`,
-		);
-	  }
-	}
+	
 }
 
 

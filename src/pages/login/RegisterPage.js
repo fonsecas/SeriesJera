@@ -64,11 +64,14 @@ class RegisterPage extends React.Component {
 
 	//Função para tratar erro das mensagens no Login do Usuario
 	getMessageByErrorCode(errorCode) {
+		console.log(errorCode)
 		switch (errorCode) {
 			case 'auth/wrong-password':
 				return 'Senha incorreta';
 			case 'auth/user-not-found':
 				return 'Usuário não encontrado';
+			case 'auth/email-already-in-use' : 
+				return 'E-mail já cadastrado';
 			default:
 				return 'Erro desconhecido';
 		}
@@ -81,7 +84,7 @@ class RegisterPage extends React.Component {
 
 		return (
 			<View>
-				<Text>{message}</Text>
+				<Text style={{color: 'red', textAlign: 'center', marginTop: 10}}>{message}</Text>
 			</View>
 		);
 	}

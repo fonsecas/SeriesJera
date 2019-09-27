@@ -19,7 +19,7 @@ class SideBar extends Component {
 
  getUserPerfil = async () => {
     const {currentUser} = firebase.auth();
-    //console.log('usuario',currentUser)
+    console.log('usuario',currentUser)
     await firebase
     .database()
     .ref(`/users/${currentUser.uid}/`)
@@ -56,7 +56,7 @@ class SideBar extends Component {
             ToastAndroid.SHORT,
             ToastAndroid.CENTER,
           )}>
-        <Image source={require('../img/default-user.png')} style={{borderWidth: 2, borderColor: 'white',height: 60, width: 60, borderRadius: Platform.OS === "ios" ? 10 : 60 }}/>
+        <Image source={{uri: `${this.state.userInfo.photoURL}?type=large`}} style={{borderWidth: 2, borderColor: 'white',height: 60, width: 60, borderRadius: Platform.OS === "ios" ? 10 : 60 }}/>
         </TouchableOpacity>
         <Text style={{fontSize: 18, color: 'white', marginTop: 5}}>{this.state.userDetail.nome}</Text>
         <Text style={{fontSize: 12, color: 'white', marginTop: 5}}>{this.state.userInfo.email}</Text>
@@ -73,16 +73,29 @@ class SideBar extends Component {
           )}>
         <View style={styles.item}>
         <View style={styles.iconContainer}>
-        <Icon name='cog' type='font-awesome' color='#000'/>
+        <Icon name='star-border' type='material' color='#000'/>
                 </View>
-        <Text style={styles.label}>Configurações</Text>
+        <Text style={styles.label}>Recomendados pra mim</Text>
       </View>
       </TouchableOpacity>
+        
         <View
                         style={{
                         borderBottomColor: '#E5E5E5',
                         borderBottomWidth: 1
                     }}/>
+                    <TouchableOpacity onPress={() => ToastAndroid.show(
+            'Em breve...',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          )}>
+        <View style={styles.item}>
+        <View style={styles.iconContainer}>
+        <Icon name='cog' type='font-awesome' color='#000'/>
+                </View>
+        <Text style={styles.label}>Configurações</Text>
+      </View>
+      </TouchableOpacity>
         <TouchableOpacity onPress={() =>  this.logoutUser()}>
         
       <View style={styles.item}>

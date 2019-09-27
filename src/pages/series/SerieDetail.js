@@ -235,15 +235,16 @@ class SerieDetail extends Component {
   };
   render() {
     return (
-      <View style={{ backgroundColor: Constants.Colors.Grey }}>
-        <Header backgroundColor={'#3F51B5'}
+        <View style={{flex: 1}}>
+            <Header backgroundColor={'#3F51B5'}
           leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
           rightComponent={this.renderAddButtonFavorites()}
         />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <ScrollView style={Styles.movieCard} showsVerticalScrollIndicator={false}>
+        <ScrollView style={{ backgroundColor: Constants.Colors.Grey }}>
+       <View style={Styles.movieCard} >
           <View style={{ alignItems: "center" }}>
             <Image
               style={Styles.image}
@@ -280,16 +281,18 @@ class SerieDetail extends Component {
             <Text style={{ flex: 0.2 }}>{Constants.Strings.OVERVIEW}</Text>
           </View>
           <View style={{ margin: 10 }}>
-            <Text style={{ flexWrap: "wrap", flex: 0.8 }}>{this.state.movieDetails.overview}</Text>
+            <Text >{this.state.movieDetails.overview}</Text>
           </View>
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
+
+        </View>
     );
   }
 }
 
 const Styles = StyleSheet.create({
-  movieCard: {
+    movieCard: {
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 10,

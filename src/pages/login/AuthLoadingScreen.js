@@ -15,21 +15,29 @@ class AuthLoadingScreen extends Component {
     }
     loadApp = async() => {
 
-        const userToken = await AsyncStorage.getItem('token9')
-         
+        const getUserToken = await AsyncStorage.getItem('token9')
+        const userToken = JSON.parse(getUserToken)
        if(userToken){
-        var obj = JSON.parse(userToken)
-        console.log(obj) 
-        let email = obj.email.toString();
-        let password = obj.password.toString()
-        await firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
-            .then(() => {
-               console.log('usuario logado')
-               
+            if(userToken.token){
+                console.log('user token',userToken) 
+                const credential = firebase.auth.FacebookAuthProvider.credential(userToken.token);
+            await firebase.auth().signInWithCredential(credential).catch((error) => {
+            console.log(error)
             })
-       }
+            }else{ 
+                var obj = JSON.parse(userToken)
+                console.log(obj) 
+                let email = obj.email.toString();
+                let password = obj.password.toString()
+                await firebase
+                    .auth()
+                    .signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                       console.log('usuario logado')
+                       
+                    })}
+       
+       } 
        this.props.navigation.navigate(userToken ? 'App' : 'Auth')
         
     }

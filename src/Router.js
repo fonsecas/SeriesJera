@@ -52,28 +52,41 @@ const AuthStackNavigator = createStackNavigator({
   )
 const Drawer = createDrawerNavigator(
   {
-    Home: { screen: MainScreen, 
+    Descrobir: { screen: MainScreen, 
               navigationOptions: {
                 drawerIcon: ({tintColor}) => (
-                  <Icon name="home" style={{color: tintColor}}/>
+                  <Icon name="home"  type="material" color={tintColor}/>
                 ),
+                
               },
             },
     'Para Assistir': { screen: WatchList, 
       navigationOptions: {
         drawerIcon: ({tintColor}) => (
-          <Icon name="playlist-play" style={{color: tintColor}}/>
+          <Icon name="restore" type="material" color={tintColor}/>
         )
       }}, 
-      'Já Assisti': { screen: WatchedList, 
+      'Já Assisti': { screen: WatchedList,  
         navigationOptions: {
           drawerIcon: ({tintColor}) => (
-            <Icon name="playlist-add-check" style={{color: tintColor}}/>
+            <Icon name="visibility" type="material" color={tintColor}/>
           )
         }}, 
       }, 
-      {
+      { contentOptions: {
+        activeTintColor: '#3F51B5',
+        itemsContainerStyle: {
+          marginVertical: 0,
+        },
+        iconContainerStyle: { 
+          opacity: 1
+        },
+        labelStyle: {
+          fontWeight: 'normal'
+        }             
+      },
         contentComponent: SideBar
+        
       }
       
  

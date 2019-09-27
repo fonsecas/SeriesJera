@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Series",
-    "slug": "series",
+    "name": "PraVerDepois",
+    "slug": "praverdepois",
     "privacy": "public",
     "sdkVersion": "34.0.0",
     "platforms": [
@@ -25,10 +25,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gabrielfonseca.seriesJera"
+      "bundleIdentifier": "com.gabrielfonsecah.PraVerDepois"
     },
     "android": {
-      "package": "com.gabrielfonseca.seriesJera"
+      "package": "com.gabrielfonsecah.praverdepois"
     }
   }
 }

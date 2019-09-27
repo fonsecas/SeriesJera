@@ -18,7 +18,8 @@ class MainScreen extends Component {
     searchText: "",
     noData: false,
     switchValue: false,
-    watchedList: []
+    watchedList: [],
+    tittleBusca: 'POPULARES'
   };
   componentDidMount(){
     callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
@@ -29,9 +30,12 @@ class MainScreen extends Component {
     if (this.state.searchText.length) {
       var endpoint =
         Constants.URL.BASE_URL + Constants.URL.SEARCH_QUERY + this.state.searchText + "&" + Constants.URL.API_KEY;
-      callRemoteMethod(this, endpoint, {}, "searchCallback", "GET", true);
+        this.setState({movieList: [], tittleBusca: 'RESULTADO BUSCA'})
+        callRemoteMethod(this, endpoint, {}, "searchCallback", "GET", true);
+      
     } else {
-      customAlert(Constants.Strings.MSG);
+      this.setState({movieList: [], tittleBusca: 'POPULARES'})
+      callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
     }
   };
 
@@ -85,7 +89,7 @@ class MainScreen extends Component {
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <Header backgroundColor={'#3F51B5'}
         leftComponent={{ icon: 'menu', underlayColor: '#3F51B5', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
-        centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>SERIES</Text>}
+        centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>DESCOBRIR</Text>}
         rightComponent={<Icon name='more-vert' underlayColor='#3F51B5' type='material' color='#fff' 
         onPress={() => ToastAndroid.show('Em breve...', ToastAndroid.LONG, ToastAndroid.TOP)} />}
       />
@@ -106,11 +110,16 @@ class MainScreen extends Component {
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+          {renderIf(
+          this.state.movieList.length,
+          <Text style={{textAlign: 'center', fontWeight: 'bold', paddingTop: 10, paddingBottom: 10, fontSize: 16,}}>{this.state.tittleBusca}</Text>
+          )}
+          </View>
+        
         {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>Nenhum filme encontrado.</Text>)}
         {renderIf(
           this.state.movieList.length,
-          <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
+         <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
             <View>
               {this.state.movieList.map(function(obj, i) {
                 let isFavorite = false;
