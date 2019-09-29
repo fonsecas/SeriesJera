@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { Alert,ToastAndroid } from 'react-native';
+import { Alert, ToastAndroid } from 'react-native';
 import axios from 'axios'
 
 
@@ -18,16 +18,16 @@ const setWatchedSeries = seriesWatched => ({
 
 export const watchSeries = (isWhachList) => {
   const { currentUser } = firebase.auth();
-  if(isWhachList) {
+  if (isWhachList) {
     return dispatch => {
       firebase
         .database()
         .ref(`/users/${currentUser.uid}/`)
         .on('value', snapshot => {
           const result = snapshot.val()
-  
+
           const { whatchlist } = result
-  
+
           if (whatchlist) {
             console.log('lista', whatchlist)
             const array = Object.values(whatchlist);
@@ -45,7 +45,7 @@ export const watchSeries = (isWhachList) => {
       .ref(`/users/${currentUser.uid}/`)
       .on('value', snapshot => {
         const result = snapshot.val()
-        const {seriesWatched} =  result
+        const { seriesWatched } = result
         if (seriesWatched) {
           const array = Object.values(seriesWatched);
           const action = setWatchedSeries(array);
@@ -53,49 +53,90 @@ export const watchSeries = (isWhachList) => {
         } else {
           return dispatch(setWatchedSeries({}))
         }
-      }) 
+      })
   }
-  
+
 }
 
-export const addWatchList = (isAdd, movie, hideToast ) => {
-	return dispatch => {
-		return new Promise((resolve, reject) => {
-        const { currentUser } = firebase.auth();
-        if(isAdd){
-						try {
-							firebase
-              .database()
-              .ref(`/users/${currentUser.uid}/whatchlist/${movie.id}`)
-              .set(movie)
-              .then(() => {	
-                resolve(true);
-              })
-						
-						} catch(e) {
-							reject(e);
-            }
-          }else {
-            try {
-              firebase
-                .database()
-                .ref(`/users/${currentUser.uid}/whatchlist/${movie.id}`)
-                .remove()
-                .then(() => {
-                  !hideToast ? ToastAndroid.show(
-                    'Desmarcado para assistir',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER,
-                  ) : null;
-                  resolve(true);
-                })
-            }		catch(e) {
-              reject(e);
-            }
-          }
-          
-          
+export const addWatchList = (isAdd, movie, hideToast, wichList) => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      const { currentUser } = firebase.auth();
+      if (isAdd) {
+        try {
+          firebase
+            .database()
+            .ref(`/users/${currentUser.uid}/whatchlist/${movie.id}`)
+            .set(movie)
+            .then(() => {
+              resolve(true);
+            })
+
+        } catch (e) {
+          reject(e);
         }
-			)
-		}
-	}
+      } else {
+        try {
+          firebase
+            .database()
+            .ref(`/users/${currentUser.uid}/whatchlist/${movie.id}`)
+            .remove()
+            .then(() => {
+              !hideToast ? ToastAndroid.show(
+                'Desmarcado para assistir',
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+              ) : null;
+              resolve(true);
+            })
+        } catch (e) {
+          reject(e);
+        }
+      }
+
+
+    }
+    )
+  }
+}
+
+export const addWatchedList = (movie) => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      const { currentUser } = firebase.auth();
+        try {
+          firebase
+        .database()
+        .ref(`/users/${currentUser.uid}/seriesWatched/${movie.id}`)
+        .set(movie)
+        .then(() => {
+          ToastAndroid.show(
+            'Marcado como Assistido',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+          Alert.alert(
+            'Compartilhar',
+            'Deseja mostar aos seus amigos que você assistiu esse filme ?',
+            [
+              { text: 'Compartilhar', onPress: () => this.onShare() },
+              {
+                text: 'Cancelar',
+                onPress: () => null,
+                style: 'cancel',
+              },
+            ],
+            { cancelable: false },
+          );
+          resolve(true);
+        })
+
+        } catch (e) {
+          reject(e);
+        }
+      
+    })
+  }
+}
+
+    
