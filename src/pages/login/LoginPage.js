@@ -18,7 +18,7 @@ import firebase from 'firebase';
 import { connect } from 'react-redux';
 import { tryLogin } from '../../actions';
 import FormRow from '../../components/FormRow';
-import { Button } from 'react-native-elements';
+import { Button, Input } from 'react-native-elements';
 import * as Facebook from 'expo-facebook';
 
 class LoginPage extends Component {
@@ -70,7 +70,6 @@ class LoginPage extends Component {
 
 	//Função para tratar erro das mensagens no Login do Usuario
 	getMessageByErrorCode(errorCode) {
-		console.log(errorCode)
 		switch (errorCode) {
 			case 'auth/wrong-password':
 				return 'Senha incorreta';
@@ -90,7 +89,7 @@ class LoginPage extends Component {
 
 		return (
 			<View>
-				<Text style={{color: 'red', textAlign: 'center', marginTop: 10, marginBottom: 10}}>{message}</Text>
+				<Text style={{ color: 'red', textAlign: 'center', marginTop: 10, marginBottom: 10 }}>{message}</Text>
 			</View>
 		);
 	}
@@ -106,57 +105,55 @@ class LoginPage extends Component {
 		);
 	}
 	logIn = async () => {
-	
-		  const {
+
+		const {
 			type,
 			token,
 			expires,
-			permissions, 
+			permissions,
 			declinedPermissions,
-		  } = await Facebook.logInWithReadPermissionsAsync('2662826547095358', {
+		} = await Facebook.logInWithReadPermissionsAsync('2662826547095358', {
 			permissions: ['public_profile', 'email'],
-		  });
-		  if (type === 'success') {
-			// Get the user's name using Facebook's Graph API 
+		});
+		if (type === 'success') {
+			// Pega o nome do usuário usando a API Graph do Facebook
 			const response = await fetch('https://graph.facebook.com/v2.5/me?fields=email,id,name&access_token=' + token)
-			.then((response) => response.json())
-			.then((json) => {
-				const credential = firebase.auth.FacebookAuthProvider.credential(token); 
+				.then((response) => response.json())
+				.then((json) => {
+					const credential = firebase.auth.FacebookAuthProvider.credential(token);
 
-					console.log('rspondese', json)
-					console.log('cdredencital', credential) 
-						// Sign in with credential from the Facebook user.
+					// Entra com credenciais do usuário do Facebook
 					firebase.auth().signInWithCredential(credential).catch((error) => {
 						console.log(error)
-						}); 
-						
-					const { currentUser } =  firebase.auth(); 
+					});
+
+					const { currentUser } = firebase.auth();
 					console.log(currentUser)
 					firebase
-							.database()
-							.ref(`/users/${currentUser.uid}/perfil/`)
-							.set({'nome': currentUser.displayName})
-							.then(() => {
-								(async () => {
+						.database()
+						.ref(`/users/${currentUser.uid}/perfil/`)
+						.set({ 'nome': currentUser.displayName })
+						.then(() => {
+							(async () => {
 
-									await AsyncStorage.setItem('token9', JSON.stringify({ 'token': token}))
-								})()
-							}) 
-							 
-					
- 
-				return this.props.navigation.navigate('App');	
-					
-			})
-			.catch(() => {
-			  reject('ERROR GETTING DATA FROM FACEBOOK') 
-			})
-			
-		  } else { 
+								await AsyncStorage.setItem('token9', JSON.stringify({ 'token': token }))
+							})()
+						})
+
+
+
+					return this.props.navigation.navigate('App');
+
+				})
+				.catch(() => {
+					reject('ERROR GETTING DATA FROM FACEBOOK')
+				})
+
+		} else {
 			// type === 'cancel'
-		  }
-		 
-	  }
+		}
+
+	}
 	render() {
 		(async () => { await AsyncStorage.clear() })()
 		return (
@@ -168,7 +165,7 @@ class LoginPage extends Component {
 							<Text style={styles.logoText}>PraVerDepois</Text>
 							<TextInput
 								style={styles.loginFormTextInput}
-								placeholder="user@mail.com" 
+								placeholder="user@mail.com"
 								value={this.state.mail}
 								onChangeText={value => this.onChangeHandler('mail', value)}
 								keyboardType="email-address"
@@ -182,22 +179,22 @@ class LoginPage extends Component {
 								onChangeText={value => this.onChangeHandler('password', value)}
 							/>
 
-							{ this.renderMessage()} 
+							{this.renderMessage()}
 
 							{this.renderButton()}
 							<Button
-							buttonStyle={styles.loginButton}
-							title="Criar Conta"
-							onPress={() => this.props.navigation.navigate('RegisterPage')}/>
-							
+								buttonStyle={styles.loginButton}
+								title="Criar Conta"
+								onPress={() => this.props.navigation.navigate('RegisterPage')} />
+
 							<Button
 								//buttonStyle={styles.fbLoginButton}
-									buttonStyle={{marginTop: 100}} 
-									titleStyle={{color:'white'}}
+								buttonStyle={{ marginTop: 100 }}
+								titleStyle={{ color: 'white' }}
 								onPress={() => this.logIn()}
 								title="Login with Facebook"
 								type="clear"
-								//color="#3897f1"
+							//color="#3897f1"
 							/>
 						</View>
 					</View>
@@ -207,14 +204,14 @@ class LoginPage extends Component {
 	}
 	componentDidMount() {
 	}
-  
+
 	componentWillUnmount() {
 	}
-  
+
 	onLoginPress() {
-  
+
 	}
-	
+
 }
 
 

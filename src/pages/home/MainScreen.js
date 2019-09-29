@@ -54,7 +54,6 @@ class MainScreen extends Component {
   logoutUser()  {
 
       firebase.auth().signOut().then(() => {
-        console.log('desconectado')
         this.props.navigation.navigate('LoginPage') 
         
       }).catch(function(error) {
@@ -83,7 +82,6 @@ class MainScreen extends Component {
     };
 
   render() {
-    console.log(this.state.movieList)
     return (
       <View style={{ flex: 1 }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}

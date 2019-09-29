@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput, TouchableOpacity,ActivityIndicator, ScrollView, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -7,6 +7,8 @@ import { renderIf } from "../../util/CommonMethods";
 import { customAlert } from "../../util/CommonMethods";
 import {Header} from 'react-native-elements'
 import firebase from 'firebase';
+import { connect } from 'react-redux';
+import { watchSeries } from '../../actions';
 
 class WhatchedList extends Component {
   static navigationOptions = {
@@ -21,32 +23,62 @@ class WhatchedList extends Component {
 
  
   componentDidMount() {
-
-    this.listSeries();
+    this.props.watchSeries(false)
   }
-    //Função para buscar a lista dos filmes favoritos do usuario
-        listSeries = async () => {
-            this.setState({ isLoading: true });
-            const {currentUser} = firebase.auth();
-        await firebase
-                .database()
-                .ref(`/users/${currentUser.uid}/`)
-                .on('value', snapshot => {
-                  const result = snapshot.val()
-                  const {seriesWatched} =  result
-                  if(seriesWatched){
-                    ;
-                    const array = Object.values( seriesWatched );
-                    //console.log(series)
-                    this.setState({movieList: array, isLoading: false})
-                  } else {
-                    this.setState({movieList: [], isLoading: false}) 
-
-                  }
-                }) 
-  
-        };
+  renderList() {
+const { seriesWatched} = this.props;
+if(seriesWatched){
+  return(
+    <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
+      <View>
+        {seriesWatched.map(function(obj, i) {
+          return (
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
+              key={i}
+              style={{ margin: 10, marginBottom: 5 }}>
+              <View style={{ flexDirection: "row" }}>
+                <Image
+                  style={Styles.image}
+                  source={{
+                    uri:
+                      obj.poster_path != null
+                        ? Constants.URL.IMAGE_URL + obj.poster_path
+                        : Constants.URL.PLACEHOLDER_IMAGE
+                  }}
+                />
+                <View style={{ flexDirection: "column" }}>
+                  <Text numberOfLines={3} style={{ fontSize: 17 }}>
+                    {obj.original_title}
+                  </Text>
+                  <View style={Styles.rowView}>
+                    <Text>{Constants.Strings.RELEASE_DATE}</Text>
+                    <Text>{obj.release_date}</Text>
+                  </View>
+                  <View style={Styles.rowView}>
+                    <Text>{Constants.Strings.LANGUAGE}</Text>
+                    <Text>{obj.original_language}</Text>
+                  </View>
+                  <View style={Styles.rowView}>
+                    <Text>{Constants.Strings.POPULARITY}</Text>
+                    <Text>{obj.popularity} %</Text>
+                  </View>
+                </View>
+              </View>
+              <View style={Styles.lineView} />
+            </TouchableOpacity>
+          );
+        }, this)}
+      </View>
+    </ScrollView>)
+}
+  }
   render() {
+    const { seriesWatched} = this.props;
+    if (seriesWatched === null) {
+      return <ActivityIndicator />;
+    }
+   
     return (
       <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -55,55 +87,13 @@ class WhatchedList extends Component {
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>LISTA JÁ ASSISTIDOS</Text>}
         rightComponent={null}
       />
-        {renderIf( !this.state.movieList.length, 
+   
+        {/* {renderIf( !seriesWatched.length, 
                    <View style={{flex: 1, justifyContent: 'center',  alignItems: 'center'}}>
                     <Text>Ops.. Parece que você não assistiu nenhum filme ainda! :(</Text>
-                    </View>)}
-        {renderIf(
-          this.state.movieList.length,
-          <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
-            <View>
-              {this.state.movieList.map(function(obj, i) {
-                return (
-                  <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
-                    key={i}
-                    style={{ margin: 10, marginBottom: 5 }}>
-                    <View style={{ flexDirection: "row" }}>
-                      <Image
-                        style={Styles.image}
-                        source={{
-                          uri:
-                            obj.poster_path != null
-                              ? Constants.URL.IMAGE_URL + obj.poster_path
-                              : Constants.URL.PLACEHOLDER_IMAGE
-                        }}
-                      />
-                      <View style={{ flexDirection: "column" }}>
-                        <Text numberOfLines={3} style={{ fontSize: 17 }}>
-                          {obj.original_title}
-                        </Text>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.RELEASE_DATE}</Text>
-                          <Text>{obj.release_date}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.LANGUAGE}</Text>
-                          <Text>{obj.original_language}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.POPULARITY}</Text>
-                          <Text>{obj.popularity} %</Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={Styles.lineView} />
-                  </TouchableOpacity>
-                );
-              }, this)}
-            </View>
-          </ScrollView>
-        )}
+                    </View>)} */}
+        {this.renderList()}
+        
       </View>
     );
   }
@@ -129,4 +119,21 @@ const Styles = StyleSheet.create({
     image: { width: 120, height: 180, marginLeft: 5, marginRight: 20 },
     rowView: { flexDirection: "row", marginTop: 10 }
   })
-export default WhatchedList;
+
+  const mapStateToProps = state => {
+    console.log('state', state)
+    const { seriesWatched } = state.series;
+    if (seriesWatched === null) {
+      return { seriesWatched } 
+    }
+
+    const keys = Object.keys(seriesWatched);
+    const seriesWatchedWithKeys = keys.map(id => {
+      return { ...seriesWatched[id]}
+    });
+    return { seriesWatched: seriesWatchedWithKeys };
+  }
+  export default connect(
+    mapStateToProps,
+    { watchSeries }
+  )(WhatchedList);

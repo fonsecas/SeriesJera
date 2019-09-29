@@ -5,7 +5,8 @@ import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Loader from "../../util/Loader";
 import { Header, Icon, Button } from 'react-native-elements'
 import firebase from 'firebase'
- 
+import { addWatchList, watchSeries} from '../../actions';
+import { connect } from 'react-redux';
 class SerieDetail extends Component {
   static navigationOptions = {
     headerTitle: Constants.Strings.SECONDARY_TITLE,
@@ -22,15 +23,12 @@ class SerieDetail extends Component {
   };
 
   toggleSwitch = (value) => {
-    //onValueChange of the switch this function will be called
     this.addSerieWatched(value)
     this.setState({ switchValue: value })
-    //state changes according to switch
-    //which will result in re-render the text
   }
   componentDidMount() {
     this.getMovieDetails();
-    this.getWhatchlist();
+    this.props.watchSeries(true)
 
   }
 
@@ -44,32 +42,6 @@ class SerieDetail extends Component {
   getMovieDetailsCallback = response => {
     this.setState({ movieDetails: response });
     this.getSeriesWatched();
-  };
-
-  //Busca as series na lista de favoritos do usuario 
-  getWhatchlist = async () => {
-    const { currentUser } = firebase.auth();
-    await firebase
-      .database()
-      .ref(`/users/${currentUser.uid}/`)
-      .on('value', snapshot => {
-        //console.log('resulta', snapshot.val())
-
-        const result = snapshot.val()
-        const { whatchlist } = result;
-        if (whatchlist) {
-          console.log('result', result)
-
-          const array = Object.values(whatchlist);
-          //console.log('series'  , seriesFavorites)
-          this.setState({ whatchlist: array })
-        } else {
-          this.setState({ whatchlist: [] })
-          console.log('vazio')
-
-        }
-      })
-
   };
 
   getSeriesWatched = async () => {
@@ -102,38 +74,7 @@ class SerieDetail extends Component {
       })
 
   };
-  //Função que adiciona/remove serie do firebase
-  addSerieFavorites = async (isAdd, hideToast) => {
-    const { currentUser } = firebase.auth();
-    if (isAdd) {
-      firebase
-        .database()
-        .ref(`/users/${currentUser.uid}/whatchlist/${this.state.movieDetails.id}`)
-        .set(this.state.movieDetails)
-        .then(() => {
-          ToastAndroid.show(
-            'Marcado para assistir',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          );
 
-        })
-
-    } else {
-      firebase
-        .database()
-        .ref(`/users/${currentUser.uid}/whatchlist/${this.state.movieDetails.id}`)
-        .remove()
-        .then(() => {
-          !hideToast ? ToastAndroid.show(
-            'Desmarcado para assistir',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          ) : null;
-          this.setState({ isFavorite: false })
-        })
-    }
-  }
   addSerieWatched = async (isAdd) => {
     const { currentUser } = firebase.auth();
     if (isAdd) {
@@ -180,21 +121,37 @@ class SerieDetail extends Component {
   }
   //Renderiza o botão de adicionar aos favoritos
   renderAddButtonFavorites() {
-    console.log('SERIES', this.state.whatchlist)
+    
     let isFavorite = false;
-    this.state.whatchlist.map((item) => {
+    const { whatchlist} = this.props;
+    console.log('SERIES', whatchlist)
+    console.log('aaaaa', this.state.movieDetails.id)
+    whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
     if (!this.state.switchValue) {
-      return (isFavorite ?
+      return (isFavorite ?       
         <Icon name='check-box'
           type='material'
           color='#fff'
-          onPress={() => { this.addSerieFavorites(false); isFavorite = false }} /> :
+          onPress={() => { this.props.addWatchList(false, this.state.movieDetails, true ).then(()=>{
+            ToastAndroid.show(
+              'Removido da lista',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER,
+            );
+            this.setState({ isFavorite: false })
+          }); isFavorite = false }} /> :
         <Icon name='check-box-outline-blank'
           type='material'
           color='#fff'
-          onPress={() => this.addSerieFavorites(true)} />)
+          onPress={() => this.props.addWatchList(true, this.state.movieDetails).then(()=>{
+            ToastAndroid.show(
+              'Marcado para assistir',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER,
+            );
+          })} />)
     } else {
       return <Icon name='share'
       type='material'
@@ -205,7 +162,8 @@ class SerieDetail extends Component {
   }
   renderAddButtonWatched() {
     let isFavorite = false;
-    this.state.whatchlist.map((item) => {
+    const { whatchlist} = this.props;
+    whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
     return (
@@ -302,5 +260,20 @@ const Styles = StyleSheet.create({
   },
   image: { width: 160, height: 220, marginLeft: 5, margin: 20 }
 })
+const mapStateToProps = state => {
+  console.log(state)
+  const { whatchlist } = state.series;
+  if (whatchlist === null) {
+    return { whatchlist }
+  }
 
-export default SerieDetail;
+  const keys = Object.keys(whatchlist);
+  const seriesWithKeys = keys.map(id => {
+    return { ...whatchlist[id] }
+  });
+  return { whatchlist: seriesWithKeys };
+}
+export default connect(
+  mapStateToProps,
+  { addWatchList, watchSeries }
+)(SerieDetail);

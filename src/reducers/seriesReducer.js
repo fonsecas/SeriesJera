@@ -1,9 +1,22 @@
-import { SET_SERIES	} from '../actions';
+import { SET_WHATCHSERIES, SET_WHATCHEDSERIES } from '../actions';
 
-export default function(state = null, action) {
+const INITIAL_STATE = {
+	seriesWatched: [], 
+	whatchlist: [] 
+}
+
+export default function (state = INITIAL_STATE, action) {
 	switch (action.type) {
-		case SET_SERIES:
-			return action.series;
+		case SET_WHATCHSERIES:
+			return {
+				...state,
+				whatchlist: action.series
+				};
+		case SET_WHATCHEDSERIES:
+			return {
+				...state,
+				seriesWatched: action.seriesWatched
+				};
 		default:
 			return state;
 	}

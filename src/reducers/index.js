@@ -1,4 +1,4 @@
-import { commbineReducers, combineReducers } from 'redux'
+import {combineReducers } from 'redux'
 import userReducer from './userReducer'
 import seriesReducer from './seriesReducer';
 

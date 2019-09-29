@@ -1,69 +1,54 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
 import { customAlert } from "../../util/CommonMethods";
-import {Header} from 'react-native-elements'
+import { Header } from 'react-native-elements'
 import firebase from 'firebase';
+import { watchSeries } from '../../actions';
+import { connect } from 'react-redux';
 
 class WatchList extends Component {
   static navigationOptions = {
     headerTitle: Constants.Strings.MAIN_TITLE
   };
   state = {
-    movieList: [], 
-    isLoading: false, 
-    searchText: "", 
-    noData: false 
+    movieList: [],
+    isLoading: false,
+    searchText: "",
+    noData: false
   };
 
- 
+
   componentDidMount() {
-
-    this.listSeries();
+    this.props.watchSeries(true)
   }
-    //Função para buscar a lista dos filmes favoritos do usuario
-        listSeries = async () => {
-            this.setState({ isLoading: true });
-            const {currentUser} = firebase.auth();
-        await firebase
-                .database()
-                .ref(`/users/${currentUser.uid}/`)
-                .on('value', snapshot => {
-                  const result = snapshot.val()
-                  const {whatchlist} =  result
-                  if(whatchlist){
-                    ;
-                    const array = Object.values( whatchlist );
-                    //console.log(series)
-                    this.setState({movieList: array, isLoading: false})
-                  } else {
-                    this.setState({movieList: [], isLoading: false}) 
 
-                  }
-                }) 
-  
-        };
   render() {
+    //console.log(this.props)
+    const { series } = this.props;
+    if (series === null) {
+      return <ActivityIndicator />;
+    }
     return (
       <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <Header backgroundColor={'#3F51B5'}
-        leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
-        centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>LISTA PARA ASSISTIR</Text>}
-        rightComponent={null}
-      />
-        {renderIf( !this.state.movieList.length, 
-                   <View style={{flex: 1, justifyContent: 'center',  alignItems: 'center'}}>
-                    <Text>Adicone um filme à para assistir</Text>
-                    </View>)}
+          leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
+          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA PARA ASSISTIR</Text>}
+          rightComponent={null}
+        />
+        {renderIf(!series.length,
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Você está em dia com seus filmes! :)</Text>
+          </View>)}
         {renderIf(
-          this.state.movieList.length,
+          series.length,
           <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
             <View>
-              {this.state.movieList.map(function(obj, i) {
+              {series.map(function (obj, i) {
                 return (
                   <TouchableOpacity
                     onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
@@ -108,25 +93,41 @@ class WatchList extends Component {
     );
   }
 }
+const mapStateToProps = state => {
+  console.log(state)
+  const { whatchlist } = state.series;
+  if (whatchlist === null) {
+    return { whatchlist }
+  }
+
+  const keys = Object.keys(whatchlist);
+  const seriesWithKeys = keys.map(id => {
+    return { ...whatchlist[id] }
+  });
+  return { series: seriesWithKeys };
+}
 
 const Styles = StyleSheet.create({
-    cardView: {
-      backgroundColor: "white",
-      margin: 10,
-      elevation: 5
-    },
-    buttonContainer: {
-      marginTop: 10,
-      marginBottom: 10,
-      padding: 5,
-      backgroundColor: "#02ADAD",
-      width: 80,
-      borderRadius: 10
-    },
-    buttonText: { color: "white", margin: 5, alignSelf: "center" },
-    lineView: { height: 2, marginTop: 10, backgroundColor: "#EDEDED" },
-    movieList: { marginLeft: 10, marginRight: 10, backgroundColor: "white", elevation: 10 },
-    image: { width: 120, height: 180, marginLeft: 5, marginRight: 20 },
-    rowView: { flexDirection: "row", marginTop: 10 }
-  })
-export default WatchList;
+  cardView: {
+    backgroundColor: "white",
+    margin: 10,
+    elevation: 5
+  },
+  buttonContainer: {
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 5,
+    backgroundColor: "#02ADAD",
+    width: 80,
+    borderRadius: 10
+  },
+  buttonText: { color: "white", margin: 5, alignSelf: "center" },
+  lineView: { height: 2, marginTop: 10, backgroundColor: "#EDEDED" },
+  movieList: { marginLeft: 10, marginRight: 10, backgroundColor: "white", elevation: 10 },
+  image: { width: 120, height: 180, marginLeft: 5, marginRight: 20 },
+  rowView: { flexDirection: "row", marginTop: 10 }
+})
+export default connect(
+  mapStateToProps,
+  { watchSeries }
+)(WatchList);

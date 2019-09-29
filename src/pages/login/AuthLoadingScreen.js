@@ -19,16 +19,14 @@ class AuthLoadingScreen extends Component {
         const userToken = JSON.parse(getUserToken)
        if(userToken){
             if(userToken.token){
-                console.log('user token',userToken) 
                 const credential = firebase.auth.FacebookAuthProvider.credential(userToken.token);
             await firebase.auth().signInWithCredential(credential).catch((error) => {
             console.log(error)
             })
             }else{ 
-                var obj = JSON.parse(userToken)
-                console.log(obj) 
-                let email = obj.email.toString();
-                let password = obj.password.toString()
+               
+                let email = userToken.email.toString();
+                let password = userToken.password.toString()
                 await firebase
                     .auth()
                     .signInWithEmailAndPassword(email, password)

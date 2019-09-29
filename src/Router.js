@@ -12,6 +12,7 @@ import { Icon } from 'react-native-elements'
 import MainScreen from './pages/home/MainScreen'
 import RegisterPage from './pages/login/RegisterPage'
 import SideBar from './components/Sidebar'
+import RecomendList from './pages/series/RecomendList'
 
 const AuthStackNavigator = createStackNavigator({
   LoginPage: { 
@@ -72,7 +73,14 @@ const Drawer = createDrawerNavigator(
             <Icon name="visibility" type="material" color={tintColor}/>
           )
         }}, 
+        'Recomendados pra mim': { screen: RecomendList,  
+          navigationOptions: {
+            drawerIcon: ({tintColor}) => (
+              <Icon name="star-border" type="material" color={tintColor}/>
+            )
+          }}, 
       }, 
+      
       { contentOptions: {
         activeTintColor: '#3F51B5',
         itemsContainerStyle: {
