@@ -4,9 +4,11 @@ import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
-import { customAlert } from "../../util/CommonMethods";
+import { addWatchList, watchSeries, addWatchedList } from '../../actions';
 import { Header } from 'react-native-elements'
 import firebase from 'firebase';
+import { connect } from 'react-redux';
+
 
 class RecomendList extends Component {
   static navigationOptions = {
@@ -27,20 +29,22 @@ class RecomendList extends Component {
 
     this.getGenres();
     callRemoteMethod(this, Constants.URL.RECOMEND_FIMLS+this.state.genresFavorite, {}, "searchCallback", "GET", true);
-    this.getWhatchlist();
-    this.getSeriesWatched();
+    this.props.watchSeries(true)
+    this.props.watchSeries(false)
+
     
   }
   searchCallback = response => {
     if (response.results.length) {
       this.setState({ noData: false });
+      
       this.setState({ recomendList: response.results });
-      this.getListRecomend();
+      
       
     } else {
       this.setState({ recomendList: [] });
       this.setState({ noData: true });
-      this.getListRecomend();
+      
     }
   };
   //Função para buscar a lista dos filmes favoritos do usuario
@@ -80,62 +84,16 @@ class RecomendList extends Component {
         }
       })
   };
-  getWhatchlist = async () => {
-    this.setState({ isLoading: true });
-    const {currentUser} = firebase.auth();
-        await firebase
-        .database()
-        .ref(`/users/${currentUser.uid}/`)
-        .on('value', snapshot => {
-          const result = snapshot.val()
-          const {whatchlist} =  result
-          if(whatchlist){
-            const array = Object.values( whatchlist );
-            
-            this.setState({whatchlist: array, isLoading: false})
-          } else {
-            this.setState({whatchlist: [], isLoading: false}) 
 
-          }
-        }) 
-
-  };
-  getSeriesWatched = async () => {
-  this.setState({ isLoading: true });
-  const {currentUser} = firebase.auth();
-  await firebase
-      .database()
-      .ref(`/users/${currentUser.uid}/`)
-      .on('value', snapshot => {
-        const result = snapshot.val()
-        const {seriesWatched} =  result
-        if(seriesWatched){
-          ;
-          const array = Object.values( seriesWatched );
-          //console.log(series)
-          this.setState({watchedList: array, isLoading: false})
-        } else {
-          this.setState({watchedList: [], isLoading: false}) 
-
-        }
-      }) 
-
-  };
-  getIdWatch(){
-
-  }
-  getListRecomend = async () => {
-    
-   
-  }
   render() {
+    console.log(this.props)
     // console.log(this.state.movieList);
     // console.log(this.state.whatchlist);
     // console.log(this.state.watchedList)
     return (
       <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3F51B5'}
+        <Header backgroundColor={'#3897f1'}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>RECOMENDAMOS</Text>}
           rightComponent={null}
@@ -214,4 +172,31 @@ const Styles = StyleSheet.create({
   image: { width: 120, height: 180, marginLeft: 5, marginRight: 20 },
   rowView: { flexDirection: "row", marginTop: 10 }
 })
-export default RecomendList; 
+
+const mapStateToProps = state => {
+  const { whatchlist, seriesWatched } = state.series;
+  if (whatchlist === null) {
+    return { whatchlist }
+  }
+  if (seriesWatched === null) {
+    return { seriesWatched }
+  }
+  const keysWhatchlist = Object.keys(whatchlist);
+  const seriesWatchWithKeys = keysWhatchlist.map(id => {
+    return { ...whatchlist[id] }
+  });
+  const keysSeriesWatched = Object.keys(seriesWatched);
+  const seriesWatchedWithKeys = keysSeriesWatched.map(id => {
+    return { ...seriesWatched[id] }
+  });
+
+  return {
+    whatchlist: seriesWatchWithKeys,
+    seriesWatched: seriesWatchedWithKeys
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  { addWatchList, watchSeries, addWatchedList }
+)(RecomendList);

@@ -22,7 +22,7 @@ export const tryLogin = ({ email, password }) => dispatch => {
 			return user;
 		})
 		.catch(error => {
-			
+
 			return Promise.reject(error)
 		})
 }
@@ -34,18 +34,20 @@ export const registerNewUser = ({ email, password, nome, dataNascimento }) => di
 		.then(user => {
 			const { currentUser } = firebase.auth();
 			firebase
-					.database()
-					.ref(`/users/${currentUser.uid}/perfil/`)
-					.set({'nome': nome,
-						'dataNascimento': dataNascimento})
-					.then(() => {console.log('foi')})
+				.database()
+				.ref(`/users/${currentUser.uid}/perfil/`)
+				.set({
+					'nome': nome,
+					'dataNascimento': dataNascimento
+				})
+				.then(() => { console.log('registrado') })
 
 			const action = userLoginSuccess(user);
 
 			dispatch(action);
 			return user;
 		})
-		.catch(error => {		
+		.catch(error => {
 			return Promise.reject(error)
 		})
 }

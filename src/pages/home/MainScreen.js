@@ -4,9 +4,10 @@ import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
-import { customAlert } from "../../util/CommonMethods";
 import {Header, Icon, Rating, Badge} from 'react-native-elements'
 import firebase from 'firebase';
+import { watchSeries } from '../../actions';
+import { connect } from 'react-redux';
 
 class MainScreen extends Component {
   static navigationOptions = {
@@ -21,11 +22,13 @@ class MainScreen extends Component {
     watchedList: [],
     tittleBusca: 'POPULARES'
   };
+
   componentDidMount(){
     callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
-    
+    this.props.watchSeries(false);
   }
-  //Função para pesquisar a consulta inserida
+
+  //REALIZA A CONSULTA COM O VALOR DO CAMPO BUSCAR
   searchButtonPressed = () => {
     if (this.state.searchText.length) {
       var endpoint =
@@ -39,11 +42,11 @@ class MainScreen extends Component {
     }
   };
 
-  //Callback do searchButtonPressed()  
+  //PEGA O RETORNO DA CONSULTA DE BUSCA E POPULA NO STATE
   searchCallback = response => {
     if (response.results.length) {
       this.setState({ noData: false });
-      this.getSeriesWatched();
+     // this.getSeriesWatched();
       this.setState({ movieList: response.results });
       
     } else {
@@ -51,44 +54,23 @@ class MainScreen extends Component {
       this.setState({ noData: true });
     }
   };
+  //LOGOUT DO USUARIO
   logoutUser()  {
-
       firebase.auth().signOut().then(() => {
-        this.props.navigation.navigate('LoginPage') 
-        
+        this.props.navigation.navigate('LoginPage')       
       }).catch(function(error) {
-        // An error happened.
+
       });
     }
-    getSeriesWatched = async () => {
-      const { currentUser } = firebase.auth();
-      await firebase
-        .database()
-        .ref(`/users/${currentUser.uid}/`)
-        .on('value', snapshot => {
-          const result = snapshot.val()
-          const { seriesWatched } = result;
-  
-          if (seriesWatched) {
-            const array = Object.values(seriesWatched);
-            
-            this.setState({ watchedList: array })
-          } else {
-            this.setState({ watchedList: [] })
-  
-          }
-        })
-  
-    };
-
+    
   render() {
     return (
       <View style={{ flex: 1 }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3F51B5'}
-        leftComponent={{ icon: 'menu', underlayColor: '#3F51B5', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
+        <Header backgroundColor={'#3897f1'}
+        leftComponent={{ icon: 'menu', underlayColor: '#3897f1', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
         centerComponent={<Text style={{color: 'white', fontWeight: 'bold'}}>DESCOBRIR</Text>}
-        rightComponent={<Icon name='more-vert' underlayColor='#3F51B5' type='material' color='#fff' 
+        rightComponent={<Icon name='more-vert' underlayColor='#3897f1' type='material' color='#fff' 
         onPress={() => ToastAndroid.show('Em breve...', ToastAndroid.LONG, ToastAndroid.TOP)} />}
       />
         <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
@@ -121,7 +103,8 @@ class MainScreen extends Component {
             <View>
               {this.state.movieList.map(function(obj, i) {
                 let isFavorite = false;
-                this.state.watchedList.map((item) => {
+                const { seriesWatched} = this.props;
+                seriesWatched.map((item) => {
                   if (item.id === obj.id) {
                     isFavorite = true;
                   }
@@ -184,7 +167,7 @@ const Styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     padding: 5,
-    backgroundColor: "#3F51B5",
+    backgroundColor: "#3897f1",
     width: 150,
     borderRadius: 10
   },
@@ -195,4 +178,20 @@ const Styles = StyleSheet.create({
   rowView: { flexDirection: "row", marginTop: 10 }
 })
 
-export default MainScreen;
+const mapStateToProps = state => {
+  const { seriesWatched } = state.series;
+  if (seriesWatched === null) {
+    return { seriesWatched } 
+  }
+
+  const keys = Object.keys(seriesWatched);
+  const seriesWatchedWithKeys = keys.map(id => {
+    return { ...seriesWatched[id]}
+  });
+  return { seriesWatched: seriesWatchedWithKeys };
+}
+
+export default connect(
+  mapStateToProps,
+  { watchSeries }
+)(MainScreen);

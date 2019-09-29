@@ -1,12 +1,12 @@
-import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share, Alert } from "react-native";
+import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Loader from "../../util/Loader";
-import { Header, Icon, Button } from 'react-native-elements'
-import firebase from 'firebase'
+import { Header, Icon } from 'react-native-elements'
 import { addWatchList, watchSeries, addWatchedList } from '../../actions';
 import { connect } from 'react-redux';
+
 class SerieDetail extends Component {
   static navigationOptions = {
     headerTitle: Constants.Strings.SECONDARY_TITLE,
@@ -22,26 +22,19 @@ class SerieDetail extends Component {
     seriesWatched: []
   };
 
-  toggleSwitch = (value) => {
-
-    this.props.addWatchedList(this.state.movieDetails).then(() => {
-      this.props.addWatchList(false, this.state.movieDetails, true)
-    })
-    this.setState({ switchValue: value })
-  }
   componentDidMount() {
     this.getMovieDetails();
     this.props.watchSeries(true)
     this.props.watchSeries(false)
   }
 
-  //Função que busca os detalhes do filme selecionado
+  //BUSCA OS DETALHES DO FILME NA API TMDB
   getMovieDetails = () => {
     var endpoint = Constants.URL.BASE_URL + "movie/" + this.props.navigation.state.params.id + "?" + Constants.URL.API_KEY;
     callRemoteMethod(this, endpoint, {}, "getMovieDetailsCallback", "GET", true);
   };
 
-  //Seta a data em movieDetails
+  //SETA OS DETALHES DO FILME
   getMovieDetailsCallback = response => {
     this.setState({ movieDetails: response });
     const { seriesWatched } = this.props;
@@ -52,13 +45,11 @@ class SerieDetail extends Component {
     this.setState({ switchValue: isWatched })
   };
 
-  //Renderiza o botão de adicionar aos favoritos
+  //RENDERIZA O BOTÃO DE ADICIONAR/REMOVER DA LISTA PARA ASSISTIR
   renderAddButtonFavorites() {
 
     let isFavorite = false;
     const { whatchlist } = this.props;
-    console.log('SERIES', whatchlist)
-    console.log('aaaaa', this.state.movieDetails.id)
     whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
@@ -95,6 +86,7 @@ class SerieDetail extends Component {
     }
 
   }
+  //RENDERIZA O BOTÃO DE ADICIONAR/REMOVER DA LISTA JÁ ASSISTIDOS
   renderAddButtonWatched() {
     let isFavorite = false;
     const { whatchlist, seriesWatched } = this.props;
@@ -111,25 +103,31 @@ class SerieDetail extends Component {
 
 
   }
-
+  //CHAMA A FUNÇÃO DE COMPARTILHAMENTO
   onShare = async () => {
     Share.share({
       message: `Acabei de assistir o filme ${this.state.movieDetails.original_title}, usando o aplicativo PraVerDepois`,
       title: 'Confira o filme que acabei de assistir usanto aplicativo PraVerDepois!',
 
     }, {
-      // Android only:
       dialogTitle: 'Compartilhar',
-      // iOS only:
       excludedActivityTypes: [
         'com.apple.UIKit.activity.PostToTwitter'
       ]
     })
   };
+
+  //FUNÇÃO QUE ALTERA O ESTADO DO TOOGLEBUTTOM (ASSISTIDOS)
+  toggleSwitch = (value) => {
+    this.props.addWatchedList(this.state.movieDetails).then(() => {
+    this.props.addWatchList(false, this.state.movieDetails, true)
+    })
+    this.setState({ switchValue: value })
+  }
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <Header backgroundColor={'#3F51B5'}
+        <Header backgroundColor={'#3897f1'}
           leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
           rightComponent={this.renderAddButtonFavorites()}
@@ -196,7 +194,6 @@ const Styles = StyleSheet.create({
   image: { width: 160, height: 220, marginLeft: 5, margin: 20 }
 })
 const mapStateToProps = state => {
-  console.log(state)
   const { whatchlist, seriesWatched } = state.series;
   if (whatchlist === null) {
     return { whatchlist }

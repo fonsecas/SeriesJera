@@ -27,7 +27,6 @@ class WatchList extends Component {
   }
 
   render() {
-    //console.log(this.props)
     const { series } = this.props;
     if (series === null) {
       return <ActivityIndicator />;
@@ -35,7 +34,7 @@ class WatchList extends Component {
     return (
       <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3F51B5'}
+        <Header backgroundColor={'#3897f1'}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA PARA ASSISTIR</Text>}
           rightComponent={null}
@@ -94,7 +93,6 @@ class WatchList extends Component {
   }
 }
 const mapStateToProps = state => {
-  console.log(state)
   const { whatchlist } = state.series;
   if (whatchlist === null) {
     return { whatchlist }

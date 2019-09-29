@@ -15,7 +15,7 @@ const setWatchedSeries = seriesWatched => ({
   seriesWatched,
 });
 
-
+//BUSCA AS DUAS LISTAS DE FILMES DO USUARIO (ASSISTIR/ASSISTIDOS)
 export const watchSeries = (isWhachList) => {
   const { currentUser } = firebase.auth();
   if (isWhachList) {
@@ -29,7 +29,6 @@ export const watchSeries = (isWhachList) => {
           const { whatchlist } = result
 
           if (whatchlist) {
-            console.log('lista', whatchlist)
             const array = Object.values(whatchlist);
             const action = setWatchSeries(array);
             dispatch(action)
@@ -58,7 +57,8 @@ export const watchSeries = (isWhachList) => {
 
 }
 
-export const addWatchList = (isAdd, movie, hideToast, wichList) => {
+//ADICIONA/REMOVE NA LISTA PARA ASSISTIR
+export const addWatchList = (isAdd, movie, hideToast) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       const { currentUser } = firebase.auth();
@@ -99,44 +99,44 @@ export const addWatchList = (isAdd, movie, hideToast, wichList) => {
     )
   }
 }
-
+//ADICIONA NA LISTA DE ASSISTIDOS
 export const addWatchedList = (movie) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       const { currentUser } = firebase.auth();
-        try {
-          firebase
-        .database()
-        .ref(`/users/${currentUser.uid}/seriesWatched/${movie.id}`)
-        .set(movie)
-        .then(() => {
-          ToastAndroid.show(
-            'Marcado como Assistido',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          );
-          Alert.alert(
-            'Compartilhar',
-            'Deseja mostar aos seus amigos que você assistiu esse filme ?',
-            [
-              { text: 'Compartilhar', onPress: () => this.onShare() },
-              {
-                text: 'Cancelar',
-                onPress: () => null,
-                style: 'cancel',
-              },
-            ],
-            { cancelable: false },
-          );
-          resolve(true);
-        })
+      try {
+        firebase
+          .database()
+          .ref(`/users/${currentUser.uid}/seriesWatched/${movie.id}`)
+          .set(movie)
+          .then(() => {
+            ToastAndroid.show(
+              'Marcado como Assistido',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER,
+            );
+            Alert.alert(
+              'Compartilhar',
+              'Deseja mostar aos seus amigos que você assistiu esse filme ?',
+              [
+                { text: 'Compartilhar', onPress: () => this.onShare() },
+                {
+                  text: 'Cancelar',
+                  onPress: () => null,
+                  style: 'cancel',
+                },
+              ],
+              { cancelable: false },
+            );
+            resolve(true);
 
-        } catch (e) {
-          reject(e);
-        }
-      
+          })
+
+      } catch (e) {
+        reject(e);
+      }
+
     })
   }
 }
 
-    

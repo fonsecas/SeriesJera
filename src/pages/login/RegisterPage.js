@@ -14,7 +14,7 @@ import { registerNewUser } from '../../actions';
 import FormRow from '../../components/FormRow';
 import DatePicker from 'react-native-datepicker';
 import styles from "./style";
-import {Button} from 'react-native-elements'
+import { Button } from 'react-native-elements'
 
 
 class RegisterPage extends React.Component {
@@ -64,13 +64,12 @@ class RegisterPage extends React.Component {
 
 	//Função para tratar erro das mensagens no Login do Usuario
 	getMessageByErrorCode(errorCode) {
-		console.log(errorCode)
 		switch (errorCode) {
 			case 'auth/wrong-password':
 				return 'Senha incorreta';
 			case 'auth/user-not-found':
 				return 'Usuário não encontrado';
-			case 'auth/email-already-in-use' : 
+			case 'auth/email-already-in-use':
 				return 'E-mail já cadastrado';
 			default:
 				return 'Erro desconhecido';
@@ -84,7 +83,7 @@ class RegisterPage extends React.Component {
 
 		return (
 			<View>
-				<Text style={{color: 'red', textAlign: 'center', marginTop: 10}}>{message}</Text>
+				<Text style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>{message}</Text>
 			</View>
 		);
 	}
@@ -94,12 +93,14 @@ class RegisterPage extends React.Component {
 			return <ActivityIndicator />;
 		return (
 			<Button
-				buttonStyle={{marginLeft: 15,
+				buttonStyle={{
+					marginLeft: 15,
 					marginRight: 15,
-					backgroundColor: '#3F51B5',
+					backgroundColor: '#3897f1',
 					borderRadius: 5,
 					height: 45,
-					marginTop: 10}}
+					marginTop: 10
+				}}
 				title="Cadastrar"
 				onPress={() => this.registerNewUser()} />
 		);
@@ -117,7 +118,8 @@ class RegisterPage extends React.Component {
 					autoCapitalize="none"
 				/>
 				<DatePicker
-					style={{height: 43,
+					style={{
+						height: 43,
 						fontSize: 14,
 						borderRadius: 5,
 						borderWidth: 1,
@@ -128,7 +130,8 @@ class RegisterPage extends React.Component {
 						marginRight: 15,
 						marginTop: 5,
 						marginBottom: 5,
-						width: '93%'}}
+						width: '93%'
+					}}
 					date={this.state.dataNascimento}
 					format="DD-MM-YYYY"
 					mode="date"

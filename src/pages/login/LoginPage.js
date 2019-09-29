@@ -128,7 +128,6 @@ class LoginPage extends Component {
 					});
 
 					const { currentUser } = firebase.auth();
-					console.log(currentUser)
 					firebase
 						.database()
 						.ref(`/users/${currentUser.uid}/perfil/`)

@@ -37,7 +37,7 @@ const AuthStackNavigator = createStackNavigator({
       navigationOptions: {
         title: 'Criar Conta',
         headerStyle: {
-          backgroundColor: "#3F51B5",
+          backgroundColor: "#3897f1",
           color: 'white',
           elevation: 1
         },
@@ -82,7 +82,7 @@ const Drawer = createDrawerNavigator(
       }, 
       
       { contentOptions: {
-        activeTintColor: '#3F51B5',
+        activeTintColor: '#3897f1',
         itemsContainerStyle: {
           marginVertical: 0,
         },
