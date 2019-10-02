@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput,FlatList, TouchableOpacity, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -8,6 +8,7 @@ import {Header, Icon, Rating, Badge} from 'react-native-elements'
 import firebase from 'firebase';
 import { watchSeries } from '../../actions';
 import { connect } from 'react-redux';
+import SerieCard from '../../components/SerieCard'
 
 class MainScreen extends Component {
   static navigationOptions = {
@@ -62,8 +63,27 @@ class MainScreen extends Component {
 
       });
     }
-    
+      renderSerieCard(item) {
+        let isFavorite = false;
+        const { seriesWatched, navigation} = this.props;
+        seriesWatched.map((serieWatch) => {
+          if (serieWatch.id === item.id) {
+            isFavorite = true;
+          }
+        })
+      return (<SerieCard
+      serie={item}
+      isWatched={isFavorite}
+      onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
+    />)
+   
+      }
   render() {
+    const { seriesWatched} = this.props;
+    if (seriesWatched === null) {
+      return <ActivityIndicator />;
+    }
+   
     return (
       <View style={{ flex: 1 }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -99,57 +119,19 @@ class MainScreen extends Component {
         {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>Nenhum filme encontrado.</Text>)}
         {renderIf(
           this.state.movieList.length,
-         <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
+          
+         <ScrollView showsVerticalScrollIndicator={false}>
             <View>
-              {this.state.movieList.map(function(obj, i) {
-                let isFavorite = false;
-                const { seriesWatched} = this.props;
-                seriesWatched.map((item) => {
-                  if (item.id === obj.id) {
-                    isFavorite = true;
-                  }
-                })
-                return (
-                  <TouchableOpacity
-                   activeOpacity={1}
-                    onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
-                    key={i}
-                    style={{ margin: 10, marginBottom: 5 }}>
-                    <View style={{ flexDirection: "row" }}>
-                      <Image
-                        style={Styles.image}
-                        source={{
-                          uri:
-                            obj.poster_path != null
-                              ? Constants.URL.IMAGE_URL + obj.poster_path
-                              : Constants.URL.PLACEHOLDER_IMAGE
-                        }}
-                      />
-                      <View style={{ flexDirection: "column" }}>
-                        <Text numberOfLines={3} style={{ fontSize: 17 }}>
-                          {obj.original_title}
-                        </Text>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.RELEASE_DATE}</Text>
-                          <Text>{obj.release_date}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.LANGUAGE}</Text>
-                          <Text>{obj.original_language}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.RATINGS}</Text>
-                          <Rating imageSize={20} readonly startingValue={(obj.vote_average/10)*5}/>
-                        </View>
-                        <View style={{ flexDirection: "row", marginTop: 10, alignItems: 'flex-end' }}>
-                            {isFavorite ? <Badge badgeStyle={{paddingHorizontal: 5, paddingVertical: 10}}value="Assistido" status="success" /> : null}
-                        </View>
-                      </View>
-                    </View>
-                    <View style={Styles.lineView} />
-                  </TouchableOpacity>
-                );
-              }, this)}
+           
+            <FlatList
+                  data={[...this.state.movieList]}
+                  renderItem={({ item, index }) => (
+                  
+                      this.renderSerieCard(item)
+                  )}
+                  keyExtractor={item => item.id}
+                  numColumns={2}
+                />
             </View>
           </ScrollView>
         )}

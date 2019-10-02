@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView,FlatList, ActivityIndicator, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -8,7 +8,8 @@ import { customAlert } from "../../util/CommonMethods";
 import { Header } from 'react-native-elements'
 import firebase from 'firebase';
 import { watchSeries } from '../../actions';
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'; 
+import SerieCard from '../../components/SerieCard'
 
 class WatchList extends Component {
   static navigationOptions = {
@@ -27,7 +28,8 @@ class WatchList extends Component {
   }
 
   render() {
-    const { series } = this.props;
+    const { series, navigation  } = this.props;
+    console.log(series)
     if (series === null) {
       return <ActivityIndicator />;
     }
@@ -45,46 +47,20 @@ class WatchList extends Component {
           </View>)}
         {renderIf(
           series.length,
-          <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
-            <View>
-              {series.map(function (obj, i) {
-                return (
-                  <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
-                    key={i}
-                    style={{ margin: 10, marginBottom: 5 }}>
-                    <View style={{ flexDirection: "row" }}>
-                      <Image
-                        style={Styles.image}
-                        source={{
-                          uri:
-                            obj.poster_path != null
-                              ? Constants.URL.IMAGE_URL + obj.poster_path
-                              : Constants.URL.PLACEHOLDER_IMAGE
-                        }}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{flex: 1, justifyContent: 'center'}}>
+            <FlatList
+                  data={[...series]}
+                  renderItem={({ item, index }) => (
+                  <SerieCard
+                        serie={item}
+                        isWatched={false}
+                        onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
                       />
-                      <View style={{ flexDirection: "column" }}>
-                        <Text numberOfLines={3} style={{ fontSize: 17 }}>
-                          {obj.original_title}
-                        </Text>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.RELEASE_DATE}</Text>
-                          <Text>{obj.release_date}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.LANGUAGE}</Text>
-                          <Text>{obj.original_language}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.POPULARITY}</Text>
-                          <Text>{obj.popularity} %</Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={Styles.lineView} />
-                  </TouchableOpacity>
-                );
-              }, this)}
+                  )}
+                  keyExtractor={item => item.id}
+                  numColumns={2}
+                />
             </View>
           </ScrollView>
         )}

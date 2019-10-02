@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput,FlatList, TouchableOpacity, ScrollView, Image, StyleSheet, TouchableHighlightBase } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -8,6 +8,7 @@ import { addWatchList, watchSeries, addWatchedList } from '../../actions';
 import { Header } from 'react-native-elements'
 import firebase from 'firebase';
 import { connect } from 'react-redux';
+import SerieCard from '../../components/SerieCard'
 
 
 class RecomendList extends Component {
@@ -28,23 +29,44 @@ class RecomendList extends Component {
   componentDidMount() {
 
     this.getGenres();
-    callRemoteMethod(this, Constants.URL.RECOMEND_FIMLS+this.state.genresFavorite, {}, "searchCallback", "GET", true);
+    callRemoteMethod(this, Constants.URL.RECOMEND_FIMLS + this.state.genresFavorite, {}, "searchCallback", "GET", true);
     this.props.watchSeries(true)
     this.props.watchSeries(false)
 
-    
+
   }
   searchCallback = response => {
     if (response.results.length) {
       this.setState({ noData: false });
-      
-      this.setState({ recomendList: response.results });
-      
-      
+      console.log
+      let array = []
+
+      response.results.map(recomend => {
+        let itExist = false;
+        this.props.whatchlist.map(watch => {
+          console.log(recomend.id, '-', watch.id)
+          if (recomend.id === watch.id) {
+            itExist = true
+            return true
+          }
+          this.props.seriesWatched.map(watched => {
+            if (recomend.id === watched.id) {
+              itExist = true
+              return true
+            }
+          })
+        })
+        console.log(itExist)
+        !itExist ? array.push(recomend) : null
+      })
+
+      this.setState({ recomendList: array });
+      console.log('entrou aqui', array)
+
     } else {
       this.setState({ recomendList: [] });
       this.setState({ noData: true });
-      
+
     }
   };
   //Função para buscar a lista dos filmes favoritos do usuario
@@ -87,9 +109,6 @@ class RecomendList extends Component {
 
   render() {
     console.log(this.props)
-    // console.log(this.state.movieList);
-    // console.log(this.state.whatchlist);
-    // console.log(this.state.watchedList)
     return (
       <View style={{ flex: 1, }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -104,44 +123,22 @@ class RecomendList extends Component {
           </View>)}
         {renderIf(
           this.state.recomendList.length,
-          <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <View>
-              {this.state.recomendList.map(function(obj, i) {
+              {this.state.recomendList.map(function (obj, i) {
                 return (
-                  <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
-                    key={i}
-                    style={{ margin: 10, marginBottom: 5 }}>
-                    <View style={{ flexDirection: "row" }}>
-                      <Image
-                        style={Styles.image}
-                        source={{
-                          uri:
-                            obj.poster_path != null 
-                              ? Constants.URL.IMAGE_URL + obj.poster_path
-                              : Constants.URL.PLACEHOLDER_IMAGE
-                        }}
+                  <FlatList
+                  data={[...this.state.recomendList]}
+                  renderItem={({ item, index }) => (
+                  <SerieCard
+                        serie={item}
+                        isWatched={false}
+                        onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
                       />
-                      <View style={{ flexDirection: "column" }}>
-                        <Text numberOfLines={3} style={{ fontSize: 17 }}>
-                          {obj.original_title}
-                        </Text>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.RELEASE_DATE}</Text>
-                          <Text>{obj.release_date}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.LANGUAGE}</Text>
-                          <Text>{obj.original_language}</Text>
-                        </View>
-                        <View style={Styles.rowView}>
-                          <Text>{Constants.Strings.POPULARITY}</Text>
-                          <Text>{obj.popularity} %</Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={Styles.lineView} />
-                  </TouchableOpacity>
+                  )}
+                  keyExtractor={item => item.id}
+                  numColumns={2}
+                />
                 );
               }, this)}
             </View>

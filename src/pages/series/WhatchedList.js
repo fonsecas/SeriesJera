@@ -1,10 +1,12 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar,FlatList, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import Constants from "../../util/Constants";
 import { Header } from 'react-native-elements'
 import { connect } from 'react-redux';
 import { watchSeries } from '../../actions';
+import SerieCard from '../../components/SerieCard'
+
 
 class WhatchedList extends Component {
   static navigationOptions = {
@@ -36,44 +38,23 @@ class WhatchedList extends Component {
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA JÁ ASSISTIDOS</Text>}
           rightComponent={null}
         />
-        {seriesWatched.length ? <ScrollView style={Styles.movieList} showsVerticalScrollIndicator={false}>
+        {seriesWatched.length ? 
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View>
             {seriesWatched.map(function (obj, i) {
               return (
-                <TouchableOpacity
-                  onPress={() => this.props.navigation.navigate("SerieDetail", { id: obj.id })}
-                  key={i}
-                  style={{ margin: 10, marginBottom: 5 }}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Image
-                      style={Styles.image}
-                      source={{
-                        uri:
-                          obj.poster_path != null
-                            ? Constants.URL.IMAGE_URL + obj.poster_path
-                            : Constants.URL.PLACEHOLDER_IMAGE
-                      }}
+                <FlatList
+                data={[...seriesWatched]}
+                renderItem={({ item, index }) => (
+                <SerieCard
+                      serie={item}
+                      isWatched={false}
+                      onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
                     />
-                    <View style={{ flexDirection: "column" }}>
-                      <Text numberOfLines={3} style={{ fontSize: 17 }}>
-                        {obj.original_title}
-                      </Text>
-                      <View style={Styles.rowView}>
-                        <Text>{Constants.Strings.RELEASE_DATE}</Text>
-                        <Text>{obj.release_date}</Text>
-                      </View>
-                      <View style={Styles.rowView}>
-                        <Text>{Constants.Strings.LANGUAGE}</Text>
-                        <Text>{obj.original_language}</Text>
-                      </View>
-                      <View style={Styles.rowView}>
-                        <Text>{Constants.Strings.POPULARITY}</Text>
-                        <Text>{obj.popularity} %</Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={Styles.lineView} />
-                </TouchableOpacity>
+                )}
+                keyExtractor={item => item.id}
+                numColumns={2}
+              />
               );
             }, this)}
           </View>

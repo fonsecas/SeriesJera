@@ -53,7 +53,7 @@ const AuthStackNavigator = createStackNavigator({
   )
 const Drawer = createDrawerNavigator(
   {
-    Descrobir: { screen: MainScreen, 
+    Descobrir: { screen: MainScreen, 
               navigationOptions: {
                 drawerIcon: ({tintColor}) => (
                   <Icon name="home"  type="material" color={tintColor}/>

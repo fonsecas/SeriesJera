@@ -28,7 +28,8 @@
       "bundleIdentifier": "com.gabrielfonsecah.PraVerDepois"
     },
     "android": {
-      "package": "com.gabrielfonsecah.praverdepois"
+      "package": "com.gabrielfonsecah.praverdepois",
+      "versionCode": 5
     }
   }
 }

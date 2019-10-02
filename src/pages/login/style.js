@@ -44,7 +44,7 @@ loginFormTextInput: {
 loginButton: {
   marginLeft: 15,
   marginRight: 15,
-  backgroundColor: '#3897f1',
+  backgroundColor: '#3F51B5',
   borderRadius: 5,
   height: 45,
   marginTop: 10,

@@ -101,6 +101,8 @@ class LoginPage extends Component {
 			<Button
 				buttonStyle={styles.loginButton}
 				title="Login"
+				type="outline"
+				titleStyle={{color: 'white'}}
 				onPress={() => this.tryLogin()} />
 		);
 	}
@@ -184,6 +186,7 @@ class LoginPage extends Component {
 							<Button
 								buttonStyle={styles.loginButton}
 								title="Criar Conta"
+								color
 								onPress={() => this.props.navigation.navigate('RegisterPage')} />
 
 							<Button
