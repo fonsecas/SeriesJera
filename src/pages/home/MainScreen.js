@@ -1,10 +1,10 @@
-import { View, Text, StatusBar, TextInput, FlatList, TouchableOpacity, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
+import { View, StatusBar, TextInput, FlatList, TouchableOpacity, ScrollView, Image, ToastAndroid, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
-import { Header, Icon, Rating, Badge } from 'react-native-elements'
+import { Header, Icon, Rating, Badge, Text } from 'react-native-elements'
 import firebase from 'firebase';
 import { watchSeries } from '../../actions';
 import { connect } from 'react-redux';
@@ -26,11 +26,15 @@ class MainScreen extends Component {
     watchedList: [],
     tittleBusca: 'POPULARES',
     movieListLancamento: [],
+    movieListPopular: [],
+    movieListTop: []
   };
 
   componentDidMount() {
-    callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
-    callRemoteMethod(this, Constants.URL.LANCAMENTO_FIMLS, {}, "searchCallbackLancamento", "GET", true);
+    callRemoteMethod(this, Constants.URL.TOP_FILMS, {}, "searchCallback", "GET", true, 'TOP');
+    callRemoteMethod(this, Constants.URL.LANCAMENTO_FIMLS, {}, "searchCallback", "GET", true, 'LACAMENTO');
+    callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true, 'POPULAR');
+
     this.props.watchSeries(false);
   }
 
@@ -39,39 +43,37 @@ class MainScreen extends Component {
     if (this.state.searchText.length) {
       var endpoint =
         Constants.URL.BASE_URL + Constants.URL.SEARCH_QUERY + this.state.searchText + "&" + Constants.URL.API_KEY;
-      this.setState({ movieList: [], tittleBusca: 'RESULTADO BUSCA' })
-      callRemoteMethod(this, endpoint, {}, "searchCallback", "GET", true);
+      this.setState({ movieList: [] })
+      callRemoteMethod(this, endpoint, {}, "searchCallback", "GET", true, 'BUSCA');
 
     } else {
-      this.setState({ movieList: [], tittleBusca: 'POPULARES' })
-      callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true);
+      this.setState({ movieList: [] })
+      // callRemoteMethod(this, Constants.URL.TOP_FILMS, {}, "searchCallback", "GET", true);
     }
   };
 
-  searchCallbackLancamento = response => {
+  searchCallback(response) {
     if (response.results.length) {
       this.setState({ noData: false });
-      // this.getSeriesWatched();
-      this.setState({ movieListLancamento: response.results });
+      switch (response.params) {
+        case 'LACAMENTO':
+          return this.setState({ movieListLancamento: response.results });
+        case 'POPULAR':
+          return this.setState({ movieListPopular: response.results });
+        case 'TOP':
+          return this.setState({ movieListTop: response.results });
+        case 'BUSCA':
+          return this.setState({ movieList: response.results });
+        default:
+          return null;
+      }
 
     } else {
-      this.setState({ movieListLancamento: [] });
+      this.setState({ movieList: [], });
       this.setState({ noData: true });
     }
   };
-  //L
-  //PEGA O RETORNO DA CONSULTA DE BUSCA E POPULA NO STATE
-  searchCallback = response => {
-    if (response.results.length) {
-      this.setState({ noData: false });
-      // this.getSeriesWatched();
-      this.setState({ movieList: response.results });
 
-    } else {
-      this.setState({ movieList: [] });
-      this.setState({ noData: true });
-    }
-  };
   //LOGOUT DO USUARIO
   logoutUser() {
     firebase.auth().signOut().then(() => {
@@ -111,56 +113,72 @@ class MainScreen extends Component {
           rightComponent={<Icon name='more-vert' underlayColor='#3897f1' type='material' color='#fff'
             onPress={() => ToastAndroid.show('Em breve...', ToastAndroid.LONG, ToastAndroid.TOP)} />}
         />
-        <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#3897f1' }}>
-          <Card>
-            <CardItem>
-              <TextInput
-                placeholder={Constants.Strings.PLACEHOLDER}
-                onChangeText={text => this.setState({ searchText: text })}
-                underlineColorAndroid={Constants.Colors.Transparent}
-                onSubmitEditing={() => this.searchButtonPressed()}
-              />
-            </CardItem>
-          </Card>
-        </View>
         {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>Nenhum filme encontrado.</Text>)}
-        {renderIf(
-          this.state.movieList.length,
-          <Tabs tabBarUnderlineStyle={{ backgroundColor: '#3897f1' }}>
-            <Tab heading={<TabHeading style={{ backgroundColor: '#F0F3F4' }}><Text style={{ color: '#3897f1' }}>POPULARES</Text></TabHeading>} >
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <View>
+        {renderIf((this.state.movieListLancamento.length && this.state.movieListTop.length && this.state.movieListPopular.length),
 
+          <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]} style={{ backgroundColor: '#EEEEEE' }}>
+            <Card borderRadius={30} style={{marginHorizontal: 10, marginVertical: 10 }}>
+              <CardItem borderRadius={30}>
+                <TextInput
+                style={{ borderRadius: 20 }}
+                  placeholder={Constants.Strings.PLACEHOLDER}
+                  onChangeText={text => this.setState({ searchText: text })}
+                  underlineColorAndroid={Constants.Colors.Transparent}
+                  onSubmitEditing={() => this.searchButtonPressed()}
+                />
+              </CardItem>
+            </Card>
+            <View>
+              {renderIf(this.state.movieList.length,
+                <View><Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20 }}>Filmes</Text>
+                  <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>Resultados da sua busca</Text>
                   <FlatList
                     data={[...this.state.movieList]}
                     renderItem={({ item, index }) => (
-
                       this.renderSerieCard(item)
                     )}
                     keyExtractor={item => item.id}
-                    numColumns={2}
+                    horizontal={true}
                   />
-                </View>
-              </ScrollView>
-            </Tab >
-            <Tab heading={<TabHeading style={{ backgroundColor: '#F0F3F4' }}><Text style={{ color: '#3897f1' }}>LANÇAMENTOS</Text></TabHeading>} >
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <View>
+                </View>)}
+              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#3897f1' }}>Acabaram de chegar</Text>
+              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>Lançamentos do cinema</Text>
+              <FlatList
+                data={[...this.state.movieListLancamento]}
+                renderItem={({ item, index }) => (
+                  this.renderSerieCard(item)
+                )}
+                keyExtractor={item => item.id}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              />
+              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, marginTop: 20, color: '#3897f1' }}>Top Filmes</Text>
+              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>De todos os tempos</Text>
+              <FlatList
+                data={[...this.state.movieListTop]}
+                renderItem={({ item, index }) => (
+                  this.renderSerieCard(item)
+                )}
+                keyExtractor={item => item.id}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
 
-                  <FlatList
-                    data={[...this.state.movieListLancamento]}
-                    renderItem={({ item, index }) => (
+              />
+              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, marginTop: 20, color: '#3897f1' }}>Populares</Text>
+              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>Sucessos imperdíveis</Text>
+              <FlatList
+                data={[...this.state.movieListPopular]}
+                renderItem={({ item, index }) => (
+                  this.renderSerieCard(item)
+                )}
+                keyExtractor={item => item.id}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
 
-                      this.renderSerieCard(item)
-                    )}
-                    keyExtractor={item => item.id}
-                    numColumns={2}
-                  />
-                </View>
-              </ScrollView>
-            </Tab>
-          </Tabs>
+              />
 
+            </View>
+          </ScrollView>
         )}
       </View>
     );

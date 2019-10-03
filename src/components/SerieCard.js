@@ -13,7 +13,7 @@ import { Card, Icon, CardItem, Left, Right } from 'native-base';
 
 
 const SerieCard = ({ serie, onPress, isWatched }) => (
-	<TouchableOpacity style={{ width: '49%'}}
+	<TouchableOpacity style={{ width: 140}}
 		onPress={onPress}>
 	<Card >
 		<CardItem cardBody>
@@ -21,7 +21,7 @@ const SerieCard = ({ serie, onPress, isWatched }) => (
 				uri: serie.poster_path != null
 					? Constants.URL.IMAGE_URL + serie.poster_path
 					: Constants.URL.PLACEHOLDER_IMAGE
-			}} style={{ height: 300, width: null, flex: 1 }} />
+			}} style={{ height: 210, width: null, flex: 1 }} />
 		</CardItem>
 		<View style={{ marginLeft: 5, marginTop: 5, height: 60, flex: 1, flexDirection: 'column' }}>
 			<Text style={{
@@ -33,7 +33,8 @@ const SerieCard = ({ serie, onPress, isWatched }) => (
 
 				{Constants.Strings.GENRES.map((item => {
 					if (item.id === serie.genre_ids[0]) {
-						return `${item.name} - ${serie.release_date.split("-", 1)}`
+						return item.name
+						// `${item.name} - ${serie.release_date.split("-", 1)}`
 					}
 
 				}))

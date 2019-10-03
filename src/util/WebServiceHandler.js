@@ -9,7 +9,7 @@ import { customAlert } from "./CommonMethods";
  * @param {*} loader Se o loadding deve ser mostrado ou não (booleano)
  */
 
-export async function callRemoteMethod(obj, endpoint, data, returnMethod, type = "GET", loader) {
+export async function callRemoteMethod(obj, endpoint, data, returnMethod, type = "GET", loader, params) {
   if (loader == true) {
     obj.setState({ isLoading: true });
   }
@@ -31,8 +31,9 @@ export async function callRemoteMethod(obj, endpoint, data, returnMethod, type =
       if (loader == true) {
         obj.setState({ isLoading: false });
       }
-      eval("obj." + returnMethod + "(responseJson)");
-    })
+      responseJson.params = params
+      eval("obj." + returnMethod + `(responseJson)`);
+    }) 
     .catch(error => {
       obj.setState({ isLoading: false });
       setTimeout(() => {
