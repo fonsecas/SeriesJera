@@ -96,7 +96,7 @@ class RegisterPage extends React.Component {
 				buttonStyle={{
 					marginLeft: 15,
 					marginRight: 15,
-					backgroundColor: '#3897f1',
+					backgroundColor: '#D32F2F',
 					borderRadius: 5,
 					height: 45,
 					marginTop: 10
@@ -171,7 +171,7 @@ const style = StyleSheet.create({
 		paddingTop: 30,
 		paddingLeft: 10,
 		paddingRight: 10,
-		backgroundColor: '#f9f9f9'
+		backgroundColor: '#263238'
 	},
 	input: {
 		paddingLeft: 5,

@@ -37,7 +37,7 @@ const AuthStackNavigator = createStackNavigator({
       navigationOptions: {
         title: 'Criar Conta',
         headerStyle: {
-          backgroundColor: "#3897f1",
+          backgroundColor: "#D32F2F",
           color: 'white',
           elevation: 1
         },
@@ -61,8 +61,9 @@ const Drawer = createDrawerNavigator(
                 
               },
             },
-    'Para Assistir': { screen: WatchList, 
+    'Para Assistir': { screen: WatchList,     
       navigationOptions: {
+        color: 'white',
         drawerIcon: ({tintColor}) => (
           <Icon name="restore" type="material" color={tintColor}/>
         )
@@ -73,24 +74,25 @@ const Drawer = createDrawerNavigator(
             <Icon name="visibility" type="material" color={tintColor}/>
           )
         }}, 
-        'Recomendados pra mim': { screen: RecomendList,  
-          navigationOptions: {
-            drawerIcon: ({tintColor}) => (
-              <Icon name="star-border" type="material" color={tintColor}/>
-            )
-          }}, 
+        // 'Recomendados pra mim': { screen: RecomendList,  
+        //   navigationOptions: {
+        //     drawerIcon: ({tintColor}) => (
+        //       <Icon name="star-border" type="material" color={tintColor}/>
+        //     )
+        //   }}, 
       }, 
       
       { contentOptions: {
-        activeTintColor: '#3897f1',
-        itemsContainerStyle: {
+        activeTintColor: "#D32F2F",
+        inactiveTintColor: 'white',  
+        itemsContainerStyle: { 
           marginVertical: 0,
         },
         iconContainerStyle: { 
           opacity: 1
         },
         labelStyle: {
-          fontWeight: 'normal'
+          fontWeight: 'normal',
         }             
       },
         contentComponent: SideBar

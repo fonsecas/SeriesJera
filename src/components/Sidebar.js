@@ -48,9 +48,9 @@ class SideBar extends Component {
   render() {
     return (
 
-      <View style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={{ flex: 1, backgroundColor: "#263238" }}>
 
-        <View style={{ height: 180, alignItems: 'center', justifyContent: 'center', backgroundColor: '#3897f1' }}>
+        <View style={{ height: 180, alignItems: 'center', justifyContent: 'center', backgroundColor: '#D32F2F' }}>
           <TouchableOpacity onPress={() => ToastAndroid.show(
             'Em breve...',
             ToastAndroid.SHORT,
@@ -78,7 +78,7 @@ class SideBar extends Component {
           )}>
             <View style={styles.item}>
               <View style={styles.iconContainer}>
-                <Icon name='cog' type='font-awesome' color='#000' />
+                <Icon name='cog' type='font-awesome' color='white' />
               </View>
               <Text style={styles.label}>Configurações</Text>
             </View>
@@ -87,7 +87,7 @@ class SideBar extends Component {
 
             <View style={styles.item}>
               <View style={styles.iconContainer}>
-                <Icon name='exit-to-app' type='material' color='#000' />
+                <Icon name='exit-to-app' type='material' color='white' />
               </View>
               <Text style={styles.label}>Sair</Text>
             </View>
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   label: {
     margin: 16,
-    color: '#222222',
+    color: 'white',
   },
   iconContainer: {
     marginHorizontal: 16,

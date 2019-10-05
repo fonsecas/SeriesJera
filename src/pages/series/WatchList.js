@@ -34,9 +34,10 @@ class WatchList extends Component {
       return <ActivityIndicator />;
     }
     return (
-      <View style={{ flex: 1, }}>
+      <View style={{ flex: 1,backgroundColor: '#263238'}}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3897f1'}
+        <Header backgroundColor={'#D32F2F'}
+         containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA PARA ASSISTIR</Text>}
           rightComponent={null}
@@ -47,7 +48,7 @@ class WatchList extends Component {
           </View>)}
         {renderIf(
           series.length,
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#263238'}}>
             <View style={{flex: 1, justifyContent: 'center'}}>
             <FlatList
                   data={[...series]}
@@ -59,7 +60,7 @@ class WatchList extends Component {
                       />
                   )}
                   keyExtractor={item => item.id}
-                  numColumns={2}
+                  numColumns={3}
                 />
             </View>
           </ScrollView>

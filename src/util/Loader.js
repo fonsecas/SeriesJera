@@ -7,7 +7,7 @@ class Loader extends Component {
       <Modal transparent animationType={"none"} visible={this.props.loading} onRequestClose={() => null}>
         <View style={[styles.modalBackground, { backgroundColor: `rgba(0,0,0,0.4)` }]}>
           <View style={styles.activityIndicatorWrapper}>
-            <ActivityIndicator />
+            <ActivityIndicator color="#D32F2F"/>
           </View>
         </View>
       </Modal>

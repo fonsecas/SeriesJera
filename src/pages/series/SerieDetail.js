@@ -1,11 +1,13 @@
-import { View, Text, StatusBar, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
+import { View, Text, StatusBar, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Loader from "../../util/Loader";
-import { Header, Icon } from 'react-native-elements'
+import { Header, Icon, Badge } from 'react-native-elements'
 import { addWatchList, watchSeries, addWatchedList } from '../../actions';
 import { connect } from 'react-redux';
+import { SliderBox } from 'react-native-image-slider-box';
+
 
 class SerieDetail extends Component {
   static navigationOptions = {
@@ -15,6 +17,8 @@ class SerieDetail extends Component {
 
   state = {
     movieDetails: {},
+    movieImages: [],
+    arrayImages: [],
     isLoading: false,
     whatchlist: [],
     isFavorite: false,
@@ -30,19 +34,26 @@ class SerieDetail extends Component {
 
   //BUSCA OS DETALHES DO FILME NA API TMDB
   getMovieDetails = () => {
-    var endpoint = Constants.URL.BASE_URL + "movie/" + this.props.navigation.state.params.id + "?" + Constants.URL.API_KEY;
-    callRemoteMethod(this, endpoint, {}, "getMovieDetailsCallback", "GET", true);
+    var endpoint = Constants.URL.BASE_URL + "movie/" + this.props.navigation.state.params.id + "?" + Constants.URL.API_KEY + '&language=pt-BR';
+    callRemoteMethod(this, endpoint, {}, "getMovieDetailsCallback", "GET", true, 'DETAIL');
+    callRemoteMethod(this, Constants.URL.IMAGE_BANNER_URL + this.props.navigation.state.params.id + '/images?' + Constants.URL.API_KEY, {}, "getMovieDetailsCallback", "GET", true, 'IMAGES');
   };
-
   //SETA OS DETALHES DO FILME
   getMovieDetailsCallback = response => {
-    this.setState({ movieDetails: response });
-    const { seriesWatched } = this.props;
-    let isWatched = false;
-    seriesWatched.map((item) => {
-      item.id === this.state.movieDetails.id ? isWatched = true : null
-    })
-    this.setState({ switchValue: isWatched })
+    switch (response.params) {
+      case 'IMAGES':
+        return this.setState({ movieImages: response.backdrops }), this.renderImages();;
+      case 'DETAIL':
+        this.setState({ movieDetails: response })
+        const { seriesWatched } = this.props;
+        let isWatched = false;
+        seriesWatched.map((item) => {
+          item.id === this.state.movieDetails.id ? isWatched = true : null
+        })
+        return this.setState({ switchValue: isWatched });
+      default:
+        return null;
+    }
   };
 
   //RENDERIZA O BOTÃO DE ADICIONAR/REMOVER DA LISTA PARA ASSISTIR
@@ -95,8 +106,9 @@ class SerieDetail extends Component {
     })
     return (
       <View style={{ flexDirection: "row", margin: 10 }}>
-        <Text style={{ flex: 0.5 }}>{Constants.Strings.TOWHATCH}</Text>
+        <Text style={{ flex: 0.5, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.TOWHATCH}</Text>
         <Switch onValueChange={this.toggleSwitch}
+          trackColor={{ true: '#D32F2F', false: 'grey' }}
           disabled={!isFavorite}
           value={this.state.switchValue} />
       </View>)
@@ -120,64 +132,76 @@ class SerieDetail extends Component {
   //FUNÇÃO QUE ALTERA O ESTADO DO TOOGLEBUTTOM (ASSISTIDOS)
   toggleSwitch = (value) => {
     this.props.addWatchedList(this.state.movieDetails).then(() => {
-    this.props.addWatchList(false, this.state.movieDetails, true)
+      this.props.addWatchList(false, this.state.movieDetails, true)
     })
     this.setState({ switchValue: value })
   }
+  renderImages = async () => {
+    let arrayImages = []
+    {
+      this.state.movieImages.length ?
+        this.state.movieImages.map((image, index) => {
+          if (index <= 4) {
+            arrayImages.push(Constants.URL.IMAGE_SINGLE_URL + image.file_path)
+          }
+        }) : null
+    }
+    this.setState({ arrayImages: arrayImages })
+  }
   render() {
+    console.log('detail', this.state.movieDetails)
     return (
-      <View style={{ flex: 1 }}>
-        <Header backgroundColor={'#3897f1'}
+      <ScrollView style={{ flex: 1, backgroundColor: '#263238' }}>
+        <Header backgroundColor={'#D32F2F'}
+          containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
           rightComponent={this.renderAddButtonFavorites()}
         />
-        <StatusBar backgroundColor={Constants.Colors.Cyan} barStyle="light-content" />
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <ScrollView style={{ backgroundColor: Constants.Colors.Grey }}>
-          <View style={Styles.movieCard} >
-            <View style={{ alignItems: "center" }}>
-              <Image
-                style={Styles.image}
-                source={{
-                  uri:
-                    this.state.movieDetails.poster_path != null
-                      ? Constants.URL.IMAGE_URL + this.state.movieDetails.poster_path
-                      : Constants.URL.PLACEHOLDER_IMAGE
-                }}
-              />
-              <Text style={{ fontSize: 16, margin: 5, fontWeight: "bold" }}>{this.state.movieDetails.original_title}</Text>
-            </View>
-            {this.renderAddButtonWatched()}
-            <View style={{ flexDirection: "row", margin: 10 }}>
-              <Text style={{ flex: 0.5 }}>{Constants.Strings.RATINGS}</Text>
-              <Text style={{ flex: 0.5 }}>
-                {this.state.movieDetails.vote_average}
-                /10
-            </Text>
-            </View>
-            <View style={{ flexDirection: "row", margin: 10 }}>
-              <Text style={{ flex: 0.5 }}>{Constants.Strings.POPULARITY}</Text>
-              <Text style={{ flex: 0.5 }}>{this.state.movieDetails.popularity}%</Text>
-            </View>
-            <View style={{ flexDirection: "row", margin: 10 }}>
-              <Text style={{ flex: 0.5 }}>{Constants.Strings.RUNTIME}</Text>
-              <Text style={{ flex: 0.5 }}>{this.state.movieDetails.runtime} min</Text>
-            </View>
-            <View style={{ flexDirection: "row", margin: 10 }}>
-              <Text style={{ flex: 0.5 }}>{Constants.Strings.LANGUAGE}</Text>
-              <Text style={{ flex: 0.5 }}>{this.state.movieDetails.original_language}</Text>
-            </View>
-            <View style={{ margin: 10 }}>
-              <Text style={{ flex: 0.2 }}>{Constants.Strings.OVERVIEW}</Text>
-            </View>
-            <View style={{ margin: 10 }}>
-              <Text >{this.state.movieDetails.overview}</Text>
+        <ImageBackground source={{ uri: this.state.arrayImages[Math.floor(Math.random() * 5)] }} style={{ backgroundColor: '#f9f9f9', width: '100%', height: 300 }}>
+          <View style={{ flexDirection: 'row', flex: 2, paddingTop: 50, backgroundColor: 'rgba(0,0,0, 0.60)' }}>
+            <Image
+              style={Styles.image}
+              source={{
+                uri:
+                  this.state.movieDetails.poster_path != null
+                    ? Constants.URL.IMAGE_URL + this.state.movieDetails.poster_path
+                    : Constants.URL.PLACEHOLDER_IMAGE
+              }}
+            />
+            <View style={{ flex: 1 }}>
+              <Text style={{
+                fontSize: 30,
+                fontFamily: 'Roboto',
+                margin: 5,
+                color: 'white',
+              }}>{this.state.movieDetails.title}</Text>
+              {this.state.movieDetails.release_date ? <View style={{ flexDirection: 'row' }}>
+                <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
+                  <Text style={{ color: '#FFF' }}>{this.state.movieDetails.release_date.split("-", 1)}</Text>
+                </View>
+                <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
+                  <Text style={{ color: '#FFF' }}>{this.state.movieDetails.genres[0].name}</Text>
+                </View>
+                <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
+                  <Icon name='star' type='material' size={15} color="#FFDF00" containerStyle={{ marginRight: 3, paddingTop: 2 }} /><Text style={{ color: '#FFF' }}>{this.state.movieDetails.vote_average}</Text>
+                </View>
+              </View> : null}
+
             </View>
           </View>
-        </ScrollView>
+        </ImageBackground>
+        {this.renderAddButtonWatched()}
 
-      </View>
+        <View style={{ margin: 10 }}>
+          <Text style={{ flex: 0.2, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.OVERVIEW.toUpperCase()}</Text>
+        </View>
+        <View style={{ margin: 10 }}>
+          <Text style={{ color: 'white', textAlign: 'justify' }}>{this.state.movieDetails.overview}</Text>
+        </View>
+
+      </ScrollView>
     );
   }
 }
@@ -191,7 +215,17 @@ const Styles = StyleSheet.create({
     backgroundColor: "white",
     elevation: 10
   },
-  image: { width: 160, height: 220, marginLeft: 5, margin: 20 }
+  image: {
+    width: 160,
+    height: 220,
+    marginLeft: 5,
+    //flex: 1,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: 'white',
+    borderRadius: 3,
+    bottom: 0,
+  }
 })
 const mapStateToProps = state => {
   const { whatchlist, seriesWatched } = state.series;

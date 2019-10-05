@@ -8,7 +8,7 @@ containerView: {
  // alignItems: 'center',
   flex: 1,
   //justifyContent: 'center',
-  backgroundColor: '#3897f1',
+  backgroundColor: '#263238',
   
   
 },
@@ -21,7 +21,7 @@ logoText: {
   marginTop: 150,
   marginBottom: 30,
   textAlign: 'center',
-  color: 'white'
+  color: '#D32F2F'
 },
 loginFormView: {
   flex: 1
@@ -44,7 +44,7 @@ loginFormTextInput: {
 loginButton: {
   marginLeft: 15,
   marginRight: 15,
-  backgroundColor: '#3F51B5',
+  backgroundColor: '#D32F2F',
   borderRadius: 5,
   height: 45,
   marginTop: 10,

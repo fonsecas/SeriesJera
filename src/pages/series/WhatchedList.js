@@ -31,15 +31,16 @@ class WhatchedList extends Component {
     }
 
     return (
-      <View style={{ flex: 1, }}>
+      <View style={{ flex: 1,backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3897f1'}
+        <Header backgroundColor={'#D32F2F'}
+         containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA JÁ ASSISTIDOS</Text>}
           rightComponent={null}
         />
         {seriesWatched.length ? 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#263238'}}>
           <View>
             {seriesWatched.map(function (obj, i) {
               return (
@@ -53,7 +54,7 @@ class WhatchedList extends Component {
                     />
                 )}
                 keyExtractor={item => item.id}
-                numColumns={2}
+                numColumns={3}
               />
               );
             }, this)}

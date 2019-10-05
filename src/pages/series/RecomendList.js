@@ -110,9 +110,10 @@ class RecomendList extends Component {
   render() {
     console.log(this.props)
     return (
-      <View style={{ flex: 1, }}>
+      <View style={{ flex: 1,backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3897f1'}
+        <Header backgroundColor={'#D32F2F'}
+         containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>RECOMENDAMOS</Text>}
           rightComponent={null}
@@ -123,7 +124,7 @@ class RecomendList extends Component {
           </View>)}
         {renderIf(
           this.state.recomendList.length,
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#263238'}}>
             <View>
               {this.state.recomendList.map(function (obj, i) {
                 return (
@@ -137,7 +138,7 @@ class RecomendList extends Component {
                       />
                   )}
                   keyExtractor={item => item.id}
-                  numColumns={2}
+                  numColumns={3}
                 />
                 );
               }, this)}

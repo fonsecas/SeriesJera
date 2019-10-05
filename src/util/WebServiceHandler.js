@@ -33,7 +33,7 @@ export async function callRemoteMethod(obj, endpoint, data, returnMethod, type =
       }
       responseJson.params = params
       eval("obj." + returnMethod + `(responseJson)`);
-    }) 
+    })
     .catch(error => {
       obj.setState({ isLoading: false });
       setTimeout(() => {

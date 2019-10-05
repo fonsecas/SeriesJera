@@ -42,7 +42,7 @@ class MainScreen extends Component {
   searchButtonPressed = () => {
     if (this.state.searchText.length) {
       var endpoint =
-        Constants.URL.BASE_URL + Constants.URL.SEARCH_QUERY + this.state.searchText + "&" + Constants.URL.API_KEY;
+        Constants.URL.BASE_URL + Constants.URL.SEARCH_QUERY + this.state.searchText + "&" + Constants.URL.API_KEY + '&language=pt-BR';
       this.setState({ movieList: [] })
       callRemoteMethod(this, endpoint, {}, "searchCallback", "GET", true, 'BUSCA');
 
@@ -104,9 +104,9 @@ class MainScreen extends Component {
     }
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#3897f1'}
+        <Header backgroundColor={'#D32F2F'}
           containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', underlayColor: '#3897f1', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>DESCOBRIR</Text>}
@@ -116,7 +116,7 @@ class MainScreen extends Component {
         {renderIf(this.state.noData, <Text style={{ textAlign: "center" }}>Nenhum filme encontrado.</Text>)}
         {renderIf((this.state.movieListLancamento.length && this.state.movieListTop.length && this.state.movieListPopular.length),
 
-          <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]} style={{ backgroundColor: '#EEEEEE' }}>
+          <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]} style={{ backgroundColor: '#263238' }}>
             <Card borderRadius={30} style={{marginHorizontal: 10, marginVertical: 10 }}>
               <CardItem borderRadius={30}>
                 <TextInput
@@ -130,8 +130,8 @@ class MainScreen extends Component {
             </Card>
             <View>
               {renderIf(this.state.movieList.length,
-                <View><Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20 }}>Filmes</Text>
-                  <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>Resultados da sua busca</Text>
+                <View><Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Filmes</Text>
+                  <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Resultados da sua busca</Text>
                   <FlatList
                     data={[...this.state.movieList]}
                     renderItem={({ item, index }) => (
@@ -141,8 +141,8 @@ class MainScreen extends Component {
                     horizontal={true}
                   />
                 </View>)}
-              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#3897f1' }}>Acabaram de chegar</Text>
-              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>Lançamentos do cinema</Text>
+              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Acabaram de chegar</Text>
+              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Lançamentos do cinema</Text>
               <FlatList
                 data={[...this.state.movieListLancamento]}
                 renderItem={({ item, index }) => (
@@ -152,8 +152,8 @@ class MainScreen extends Component {
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               />
-              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, marginTop: 20, color: '#3897f1' }}>Top Filmes</Text>
-              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>De todos os tempos</Text>
+              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, marginTop: 20, color: '#D32F2F' }}>Top Filmes</Text>
+              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>De todos os tempos</Text>
               <FlatList
                 data={[...this.state.movieListTop]}
                 renderItem={({ item, index }) => (
@@ -164,8 +164,8 @@ class MainScreen extends Component {
                 showsHorizontalScrollIndicator={false}
 
               />
-              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, marginTop: 20, color: '#3897f1' }}>Populares</Text>
-              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "#333" }}>Sucessos imperdíveis</Text>
+              <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, marginTop: 20, color: '#D32F2F' }}>Populares</Text>
+              <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Sucessos imperdíveis</Text>
               <FlatList
                 data={[...this.state.movieListPopular]}
                 renderItem={({ item, index }) => (

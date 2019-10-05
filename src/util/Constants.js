@@ -12,13 +12,15 @@ module.exports = {
   URL: {
     BASE_URL: "https://api.themoviedb.org/3/",
     IMAGE_URL: "http://image.tmdb.org/t/p/w185",
-    API_KEY: "api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
+    IMAGE_SINGLE_URL: "http://image.tmdb.org/t/p/w500",
+    IMAGE_BANNER_URL: "https://api.themoviedb.org/3/movie/",
+    API_KEY: "api_key=8f72024179b31532014de08efcc769c2",
     SEARCH_QUERY: "search/movie?query=",
     PLACEHOLDER_IMAGE: "https://s3-ap-southeast-1.amazonaws.com/popcornsg/placeholder-movieimage.png",
     TOP_FILMS: "https://api.themoviedb.org/3/movie/top_rated?&api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
     POPULAR_FILMS: "https://api.themoviedb.org/3/movie/popular?&api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
     RECOMEND_FIMLS: "https://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR&with_genres=",
-    LANCAMENTO_FIMLS: "http://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&with_release_type=1&language=pt-BR&"
+    LANCAMENTO_FIMLS: "https://api.themoviedb.org/3/movie/now_playing?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR"
 
   },
   Strings: {
