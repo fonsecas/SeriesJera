@@ -11,6 +11,7 @@ module.exports = {
   },
   URL: {
     BASE_URL: "https://api.themoviedb.org/3/",
+    BASE_URL_MOVIE: "https://api.themoviedb.org/3/movie/",
     IMAGE_URL: "http://image.tmdb.org/t/p/w185",
     IMAGE_SINGLE_URL: "http://image.tmdb.org/t/p/w500",
     IMAGE_BANNER_URL: "https://api.themoviedb.org/3/movie/",

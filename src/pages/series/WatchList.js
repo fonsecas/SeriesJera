@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView,FlatList, ActivityIndicator, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, TextInput, TouchableOpacity, ScrollView, FlatList, ActivityIndicator, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -8,7 +8,7 @@ import { customAlert } from "../../util/CommonMethods";
 import { Header } from 'react-native-elements'
 import firebase from 'firebase';
 import { watchSeries } from '../../actions';
-import { connect } from 'react-redux'; 
+import { connect } from 'react-redux';
 import SerieCard from '../../components/SerieCard'
 
 class WatchList extends Component {
@@ -28,40 +28,40 @@ class WatchList extends Component {
   }
 
   render() {
-    const { series, navigation  } = this.props;
+    const { series, navigation } = this.props;
     console.log(series)
     if (series === null) {
       return <ActivityIndicator />;
     }
     return (
-      <View style={{ flex: 1,backgroundColor: '#263238'}}>
+      <View style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <Header backgroundColor={'#D32F2F'}
-         containerStyle={{ borderBottomWidth: 0 }}
+          containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA PARA ASSISTIR</Text>}
           rightComponent={null}
         />
         {renderIf(!series.length,
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Você está em dia com seus filmes! :)</Text>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#263238' }}>
+            <Text style={{ color: 'white' }}>Você está em dia com seus filmes! :)</Text>
           </View>)}
         {renderIf(
           series.length,
-          <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#263238'}}>
-            <View style={{flex: 1, justifyContent: 'center'}}>
-            <FlatList
-                  data={[...series]}
-                  renderItem={({ item, index }) => (
+          <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#263238' }}>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <FlatList
+                data={[...series]}
+                renderItem={({ item, index }) => (
                   <SerieCard
-                        serie={item}
-                        isWatched={false}
-                        onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
-                      />
-                  )}
-                  keyExtractor={item => item.id}
-                  numColumns={3}
-                />
+                    serie={item}
+                    isWatched={false}
+                    onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
+                  />
+                )}
+                keyExtractor={item => item.id}
+                numColumns={3}
+              />
             </View>
           </ScrollView>
         )}

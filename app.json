@@ -15,7 +15,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#263238"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -29,7 +29,7 @@
     },
     "android": {
       "package": "com.gabrielfonsecah.praverdepois",
-      "versionCode": 5
+      "versionCode": 6
     }
   }
 }

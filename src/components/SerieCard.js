@@ -5,7 +5,8 @@ import {
 	StyleSheet,
 	Dimensions,
 	Image,
-	TouchableOpacity
+	TouchableOpacity,
+	TouchableWithoutFeedback
 } from 'react-native';
 import Constants from '../util/Constants';
 import { Rating, } from 'react-native-elements';
@@ -14,7 +15,8 @@ import { Card, Icon, CardItem, Left, Right } from 'native-base';
 
 const SerieCard = ({ serie, onPress, isWatched }) => (
 	<TouchableOpacity style={{ width: 140 }}
-		onPress={onPress}>
+		onPress={onPress}
+		activeOpacity={1} >
 		<Card >
 			<CardItem cardBody style={{ borderWidth: 0, backgroundColor: '#f9f9f9' }}>
 				<Image source={{

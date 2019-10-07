@@ -102,7 +102,7 @@ class LoginPage extends Component {
 				buttonStyle={styles.loginButton}
 				title="Login"
 				type="outline"
-				titleStyle={{color: 'white'}}
+				titleStyle={{color: '#D32F2F'}}
 				onPress={() => this.tryLogin()} />
 		);
 	}
@@ -185,6 +185,7 @@ class LoginPage extends Component {
 							{this.renderButton()}
 							<Button
 								buttonStyle={styles.loginButton}
+								titleStyle={{color: '#D32F2F'}}
 								title="Criar Conta"
 								color
 								onPress={() => this.props.navigation.navigate('RegisterPage')} />
@@ -194,7 +195,7 @@ class LoginPage extends Component {
 								buttonStyle={{ marginTop: 100 }}
 								titleStyle={{ color: 'white' }}
 								onPress={() => this.logIn()}
-								title="Login with Facebook"
+								title="Login com Facebook"
 								type="clear"
 							//color="#3897f1"
 							/>

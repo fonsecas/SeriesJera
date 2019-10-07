@@ -1,12 +1,16 @@
-import { View, Text, StatusBar, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
+import { View, Text, StatusBar, FlatList, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
 import Loader from "../../util/Loader";
-import { Header, Icon, Badge } from 'react-native-elements'
+import { Header, Icon, Badge, Button } from 'react-native-elements'
 import { addWatchList, watchSeries, addWatchedList } from '../../actions';
 import { connect } from 'react-redux';
 import { SliderBox } from 'react-native-image-slider-box';
+import SerieCard from '../../components/SerieCard';
+import { StackActions, NavigationActions } from 'react-navigation';
+
+
 
 
 class SerieDetail extends Component {
@@ -23,7 +27,8 @@ class SerieDetail extends Component {
     whatchlist: [],
     isFavorite: false,
     switchValue: false,
-    seriesWatched: []
+    seriesWatched: [],
+    movieSimilar: []
   };
 
   componentDidMount() {
@@ -36,6 +41,7 @@ class SerieDetail extends Component {
   getMovieDetails = () => {
     var endpoint = Constants.URL.BASE_URL + "movie/" + this.props.navigation.state.params.id + "?" + Constants.URL.API_KEY + '&language=pt-BR';
     callRemoteMethod(this, endpoint, {}, "getMovieDetailsCallback", "GET", true, 'DETAIL');
+    callRemoteMethod(this, Constants.URL.BASE_URL_MOVIE + this.props.navigation.state.params.id + '/similar?' + Constants.URL.API_KEY, {}, "getMovieDetailsCallback", "GET", true, 'SIMILAR');
     callRemoteMethod(this, Constants.URL.IMAGE_BANNER_URL + this.props.navigation.state.params.id + '/images?' + Constants.URL.API_KEY, {}, "getMovieDetailsCallback", "GET", true, 'IMAGES');
   };
   //SETA OS DETALHES DO FILME
@@ -51,6 +57,8 @@ class SerieDetail extends Component {
           item.id === this.state.movieDetails.id ? isWatched = true : null
         })
         return this.setState({ switchValue: isWatched });
+      case 'SIMILAR':
+        return this.setState({ movieSimilar: response.results });
       default:
         return null;
     }
@@ -64,36 +72,59 @@ class SerieDetail extends Component {
     whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
-    if (!this.state.switchValue) {
-      return (isFavorite ?
-        <Icon name='check-box'
-          type='material'
-          color='#fff'
-          onPress={() => {
-            this.props.addWatchList(false, this.state.movieDetails, true).then(() => {
+    if (!this.state.isLoading) {
+      if (!this.state.switchValue) {
+        return (isFavorite ?
+          <Button
+            buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
+            titleStyle={{ color: '#D32F2F' }}
+            icon={<Icon name='delete-sweep'
+              type='material'
+              color='#D32F2F'
+              containerStyle={{ marginHorizontal: 10 }} />}
+            type="outline"
+            title="Remover da minha lista"
+            onPress={() => {
+              this.props.addWatchList(false, this.state.movieDetails, true).then(() => {
+                ToastAndroid.show(
+                  'Removido da lista',
+                  ToastAndroid.SHORT,
+                  ToastAndroid.CENTER,
+                );
+                this.setState({ isFavorite: false })
+              }); isFavorite = false
+            }}
+          /> :
+          <Button
+            buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
+            titleStyle={{ color: '#D32F2F' }}
+            icon={<Icon name='playlist-add'
+              type='material'
+              color='#D32F2F'
+              containerStyle={{ marginHorizontal: 10 }} />}
+            type="outline"
+            title="Adicionar na lista para assistir"
+            onPress={() => this.props.addWatchList(true, this.state.movieDetails).then(() => {
               ToastAndroid.show(
-                'Removido da lista',
+                'Marcado para assistir',
                 ToastAndroid.SHORT,
                 ToastAndroid.CENTER,
               );
-              this.setState({ isFavorite: false })
-            }); isFavorite = false
-          }} /> :
-        <Icon name='check-box-outline-blank'
-          type='material'
-          color='#fff'
-          onPress={() => this.props.addWatchList(true, this.state.movieDetails).then(() => {
-            ToastAndroid.show(
-              'Marcado para assistir',
-              ToastAndroid.SHORT,
-              ToastAndroid.CENTER,
-            );
-          })} />)
-    } else {
-      return <Icon name='share'
-        type='material'
-        color='#fff'
-        onPress={() => this.onShare(true)} />
+            })}
+          />)
+      } else {
+        return <Button
+          buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
+          titleStyle={{ color: '#D32F2F' }}
+          icon={<Icon name='share'
+            type='material'
+            color='#D32F2F'
+            containerStyle={{ marginHorizontal: 10 }} />}
+          type="outline"
+          title="Compartlihar com amigos"
+          onPress={() => this.onShare(true)}
+        />
+      }
     }
 
   }
@@ -104,16 +135,17 @@ class SerieDetail extends Component {
     whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
-    return (
-      <View style={{ flexDirection: "row", margin: 10 }}>
-        <Text style={{ flex: 0.5, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.TOWHATCH}</Text>
-        <Switch onValueChange={this.toggleSwitch}
-          trackColor={{ true: '#D32F2F', false: 'grey' }}
-          disabled={!isFavorite}
-          value={this.state.switchValue} />
-      </View>)
+    if (!this.state.isLoading) {
+      return (
+        <View style={{ flexDirection: "row", margin: 10 }}>
+          <Text style={{ flex: 0.5, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.TOWHATCH}</Text>
+          <Switch onValueChange={this.toggleSwitch}
+            trackColor={{ true: '#D32F2F', false: 'grey' }}
+            disabled={!isFavorite}
+            value={this.state.switchValue} />
+        </View>)
 
-
+    }
   }
   //CHAMA A FUNÇÃO DE COMPARTILHAMENTO
   onShare = async () => {
@@ -136,6 +168,7 @@ class SerieDetail extends Component {
     })
     this.setState({ switchValue: value })
   }
+  //GERENCIA AS IMAGENS NO BANNER DE FUNDO 
   renderImages = async () => {
     let arrayImages = []
     {
@@ -148,19 +181,32 @@ class SerieDetail extends Component {
     }
     this.setState({ arrayImages: arrayImages })
   }
+  renderSerieCard(item) {
+    let isFavorite = false;
+    const { seriesWatched, navigation } = this.props;
+    seriesWatched.map((serieWatch) => {
+      if (serieWatch.id === item.id) {
+        isFavorite = true;
+      }
+    })
+    return (<SerieCard
+      serie={item}
+      isWatched={isFavorite}
+      onPress={() => navigation.navigate({
+        routeName: 'SerieDetail',
+        params: { id: item.id },
+        key: 'SerieDetail' + item.id
+      })}
+    />)
+
+  }
   render() {
-    console.log('detail', this.state.movieDetails)
+    console.log('recomend', this.state.movieSimilar)
     return (
       <ScrollView style={{ flex: 1, backgroundColor: '#263238' }}>
-        <Header backgroundColor={'#D32F2F'}
-          containerStyle={{ borderBottomWidth: 0 }}
-          leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
-          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{this.state.movieDetails.title}</Text>}
-          rightComponent={this.renderAddButtonFavorites()}
-        />
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <ImageBackground source={{ uri: this.state.arrayImages[Math.floor(Math.random() * 5)] }} style={{ backgroundColor: '#f9f9f9', width: '100%', height: 300 }}>
-          <View style={{ flexDirection: 'row', flex: 2, paddingTop: 50, backgroundColor: 'rgba(0,0,0, 0.60)' }}>
+        <ImageBackground source={{ uri: this.state.arrayImages[Math.floor(Math.random() * 5)] }} style={{ backgroundColor: '#f9f9f9', width: '100%', height: 350 }}>
+          <View style={{ flexDirection: 'row', flex: 2, paddingTop: 100, backgroundColor: 'rgba(0,0,0, 0.60)' }}>
             <Image
               style={Styles.image}
               source={{
@@ -192,14 +238,28 @@ class SerieDetail extends Component {
             </View>
           </View>
         </ImageBackground>
-        {this.renderAddButtonWatched()}
 
-        <View style={{ margin: 10 }}>
-          <Text style={{ flex: 0.2, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.OVERVIEW.toUpperCase()}</Text>
-        </View>
-        <View style={{ margin: 10 }}>
-          <Text style={{ color: 'white', textAlign: 'justify' }}>{this.state.movieDetails.overview}</Text>
-        </View>
+        {this.renderAddButtonFavorites()}
+        {this.renderAddButtonWatched()}
+        {!this.state.isLoading ?
+          <View><View style={{ margin: 10 }}>
+            <Text style={{ flex: 0.2, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.OVERVIEW.toUpperCase()}</Text>
+          </View>
+            <View style={{ margin: 10 }}>
+              <Text style={{ color: 'white', textAlign: 'justify' }}>{this.state.movieDetails.overview}</Text>
+            </View>
+            <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Filmes Semelhantes</Text>
+            <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Parecidos com o que está vendo</Text>
+            <FlatList
+              data={[...this.state.movieSimilar]}
+              renderItem={({ item, index }) => (
+                this.renderSerieCard(item)
+              )}
+              keyExtractor={item => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            /></View> : null}
+
 
       </ScrollView>
     );

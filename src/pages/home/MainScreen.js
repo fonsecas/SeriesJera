@@ -93,7 +93,11 @@ class MainScreen extends Component {
     return (<SerieCard
       serie={item}
       isWatched={isFavorite}
-      onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
+      onPress={() => navigation.navigate({
+        routeName: 'SerieDetail',
+        params: { id: item.id },
+        key: 'SerieDetail'
+      })}
     />)
 
   }
@@ -117,10 +121,10 @@ class MainScreen extends Component {
         {renderIf((this.state.movieListLancamento.length && this.state.movieListTop.length && this.state.movieListPopular.length),
 
           <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]} style={{ backgroundColor: '#263238' }}>
-            <Card borderRadius={30} style={{marginHorizontal: 10, marginVertical: 10 }}>
+            <Card borderRadius={30} style={{ marginHorizontal: 10, marginVertical: 10 }}>
               <CardItem borderRadius={30}>
                 <TextInput
-                style={{ borderRadius: 20 }}
+                  style={{ borderRadius: 20 }}
                   placeholder={Constants.Strings.PLACEHOLDER}
                   onChangeText={text => this.setState({ searchText: text })}
                   underlineColorAndroid={Constants.Colors.Transparent}

@@ -1,4 +1,4 @@
-import { View, Text, StatusBar,FlatList, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Image, StyleSheet } from "react-native";
+import { View, Text, StatusBar, FlatList, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Image, StyleSheet } from "react-native";
 import React, { Component } from "react";
 import Loader from "../../util/Loader";
 import Constants from "../../util/Constants";
@@ -25,42 +25,42 @@ class WhatchedList extends Component {
   }
 
   render() {
-    const { seriesWatched } = this.props;
+    const { seriesWatched, navigation } = this.props;
     if (seriesWatched === null) {
       return <ActivityIndicator />;
     }
 
     return (
-      <View style={{ flex: 1,backgroundColor: '#263238' }}>
+      <View style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
         <Header backgroundColor={'#D32F2F'}
-         containerStyle={{ borderBottomWidth: 0 }}
+          containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>LISTA JÁ ASSISTIDOS</Text>}
           rightComponent={null}
         />
-        {seriesWatched.length ? 
-        <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#263238'}}>
-          <View>
-            {seriesWatched.map(function (obj, i) {
-              return (
-                <FlatList
-                data={[...seriesWatched]}
-                renderItem={({ item, index }) => (
-                <SerieCard
-                      serie={item}
-                      isWatched={false}
-                      onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
-                    />
-                )}
-                keyExtractor={item => item.id}
-                numColumns={3}
-              />
-              );
-            }, this)}
-          </View>
-        </ScrollView> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Você está não assistiu nenhum filme! :(</Text>
+        {seriesWatched.length ?
+          <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#263238' }}>
+            <View>
+              {seriesWatched.map(function (obj, i) {
+                return (
+                  <FlatList
+                    data={[...seriesWatched]}
+                    renderItem={({ item, index }) => (
+                      <SerieCard
+                        serie={item}
+                        isWatched={false}
+                        onPress={() => navigation.navigate('SerieDetail', { id: item.id })}
+                      />
+                    )}
+                    keyExtractor={item => item.id}
+                    numColumns={3}
+                  />
+                );
+              }, this)}
+            </View>
+          </ScrollView> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#263238' }}>
+            <Text style={{ color: 'white' }}>Você não assistiu nenhum filme! :(</Text>
           </View>}
       </View>
     );
