@@ -41,9 +41,6 @@ class WhatchedList extends Component {
         />
         {seriesWatched.length ?
           <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#263238' }}>
-            <View>
-              {seriesWatched.map(function (obj, i) {
-                return (
                   <FlatList
                     data={[...seriesWatched]}
                     renderItem={({ item, index }) => (
@@ -56,9 +53,6 @@ class WhatchedList extends Component {
                     keyExtractor={item => item.id}
                     numColumns={3}
                   />
-                );
-              }, this)}
-            </View>
           </ScrollView> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#263238' }}>
             <Text style={{ color: 'white' }}>Você não assistiu nenhum filme! :(</Text>
           </View>}

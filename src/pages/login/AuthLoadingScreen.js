@@ -7,6 +7,7 @@ import {
     AsyncStorage
 } from 'react-native'
 import firebase from 'firebase';
+
 class AuthLoadingScreen extends Component {
 
     constructor() {

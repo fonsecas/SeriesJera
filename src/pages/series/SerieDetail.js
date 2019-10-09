@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, FlatList, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
+import { View, Text, StatusBar, FlatList, TouchableOpacity, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -201,7 +201,7 @@ class SerieDetail extends Component {
 
   }
   render() {
-    console.log('recomend', this.state.movieSimilar)
+    console.log(this.state.movieDetails)
     return (
       <ScrollView style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -227,9 +227,11 @@ class SerieDetail extends Component {
                 <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
                   <Text style={{ color: '#FFF' }}>{this.state.movieDetails.release_date.split("-", 1)}</Text>
                 </View>
-                <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
-                  <Text style={{ color: '#FFF' }}>{this.state.movieDetails.genres[0].name}</Text>
-                </View>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', this.state.movieDetails.genres[0])}>
+                  <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
+                    <Text style={{ color: '#FFF' }}>{this.state.movieDetails.genres[0].name}</Text>
+                  </View>
+                </TouchableOpacity>
                 <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
                   <Icon name='star' type='material' size={15} color="#FFDF00" containerStyle={{ marginRight: 3, paddingTop: 2 }} /><Text style={{ color: '#FFF' }}>{this.state.movieDetails.vote_average}</Text>
                 </View>

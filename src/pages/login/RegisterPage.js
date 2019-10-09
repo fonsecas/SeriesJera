@@ -8,7 +8,6 @@ import {
 	Alert,
 	AsyncStorage
 } from 'react-native';
-import firebase from 'firebase';
 import { connect } from 'react-redux';
 import { registerNewUser } from '../../actions';
 import FormRow from '../../components/FormRow';

@@ -9,8 +9,6 @@ import firebase from 'firebase';
 import { watchSeries } from '../../actions';
 import { connect } from 'react-redux';
 import SerieCard from '../../components/SerieCard'
-import { Tab, Tabs, TabHeading } from 'native-base';
-import SearchBar from "react-native-dynamic-search-bar";
 import { Card, CardItem, Left, Right } from 'native-base';
 
 class MainScreen extends Component {
@@ -48,10 +46,9 @@ class MainScreen extends Component {
 
     } else {
       this.setState({ movieList: [] })
-      // callRemoteMethod(this, Constants.URL.TOP_FILMS, {}, "searchCallback", "GET", true);
     }
   };
-
+  //POPULA O RETORNO DA REQUISIÇÃO NO SEU STATE DEFINIDO
   searchCallback(response) {
     if (response.results.length) {
       this.setState({ noData: false });
@@ -82,6 +79,7 @@ class MainScreen extends Component {
 
     });
   }
+  
   renderSerieCard(item) {
     let isFavorite = false;
     const { seriesWatched, navigation } = this.props;
@@ -101,6 +99,7 @@ class MainScreen extends Component {
     />)
 
   }
+
   render() {
     const { seriesWatched } = this.props;
     if (seriesWatched === null) {
@@ -134,7 +133,8 @@ class MainScreen extends Component {
             </Card>
             <View>
               {renderIf(this.state.movieList.length,
-                <View><Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Filmes</Text>
+                <View>
+                  <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Filmes</Text>
                   <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Resultados da sua busca</Text>
                   <FlatList
                     data={[...this.state.movieList]}
@@ -145,6 +145,20 @@ class MainScreen extends Component {
                     horizontal={true}
                   />
                 </View>)}
+                <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Gêneros</Text>
+                  <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Descubra pelo seu gênero preferido</Text>
+                  <FlatList
+                    data={[...Constants.Strings.GENRES]}
+                    renderItem={({ item, index }) => (
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', item)}>
+                        <View style={{paddingVertical: 5,paddingHorizontal: 10, margin: 5, backgroundColor: 'grey', borderRadius: 15}}>
+                          <Text style={{color: 'white'}}>{item.name}</Text>
+                        </View></TouchableOpacity>
+                      )}
+                    keyExtractor={item => item.id}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                  />
               <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Acabaram de chegar</Text>
               <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Lançamentos do cinema</Text>
               <FlatList

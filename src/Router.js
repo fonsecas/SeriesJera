@@ -13,6 +13,7 @@ import MainScreen from './pages/home/MainScreen'
 import RegisterPage from './pages/login/RegisterPage'
 import SideBar from './components/Sidebar'
 import RecomendList from './pages/series/RecomendList'
+import GenresList from './pages/series/GenresList'
 
 const AuthStackNavigator = createStackNavigator({
   LoginPage: { 
@@ -105,7 +106,7 @@ const Drawer = createDrawerNavigator(
   {
   Drawer: { screen: Drawer },
   SerieDetail: {screen: SerieDetail},
-  
+  GenresList: {screen: GenresList}
   },
   
   {

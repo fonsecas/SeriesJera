@@ -46,7 +46,7 @@ loginButton: {
   marginRight: 15,
   backgroundColor: '#263238',
   borderColor: '#D32F2F',
-  borderRadius: 5,
+  borderRadius: 20,
   borderWidth: 1,
   height: 45,
   marginTop: 10,

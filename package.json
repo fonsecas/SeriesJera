@@ -30,6 +30,7 @@
     "react-native-shadow-cards": "^1.0.2",
     "react-native-snap-carousel": "^3.8.1",
     "react-native-star-review": "0.0.23",
+    "react-native-swipeable-rating": "^0.2.1",
     "react-native-tab-view": "^2.10.0",
     "react-native-unimodules": "^0.7.0-rc.1",
     "react-native-web": "^0.11.4",

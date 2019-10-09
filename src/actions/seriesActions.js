@@ -99,8 +99,10 @@ export const addWatchList = (isAdd, movie, hideToast) => {
     )
   }
 }
+
 //ADICIONA NA LISTA DE ASSISTIDOS
 export const addWatchedList = (movie) => {
+  console.log('actions', movie)
   return dispatch => {
     return new Promise((resolve, reject) => {
       const { currentUser } = firebase.auth();

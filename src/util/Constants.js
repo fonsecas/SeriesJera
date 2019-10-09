@@ -1,14 +1,5 @@
 const BASE_URL = "https://api.themoviedb.org/3/";
 module.exports = {
-   CONFIG: {
-    apiKey: "AIzaSyANrg7BYCCXpkT9zo6Mb3CG_BuBc1AfdkU",
-    authDomain: "seriesjera2019.firebaseapp.com",
-    databaseURL: "https://seriesjera2019.firebaseio.com",
-    projectId: "seriesjera2019",
-    storageBucket: "",
-    messagingSenderId: "750035580453",
-    appId: "1:750035580453:web:19ab5f51ba30efef92b1cc"
-  },
   URL: {
     BASE_URL: "https://api.themoviedb.org/3/",
     BASE_URL_MOVIE: "https://api.themoviedb.org/3/movie/",
@@ -16,13 +7,14 @@ module.exports = {
     IMAGE_SINGLE_URL: "http://image.tmdb.org/t/p/w500",
     IMAGE_BANNER_URL: "https://api.themoviedb.org/3/movie/",
     API_KEY: "api_key=8f72024179b31532014de08efcc769c2",
-    SEARCH_QUERY: "search/movie?query=",
-    PLACEHOLDER_IMAGE: "https://s3-ap-southeast-1.amazonaws.com/popcornsg/placeholder-movieimage.png",
+    SEARCH_QUERY: "search/movie?query=", 
+    SEARCH_BY_GENRES: 'https://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR&sort_by=popularity.desc&include_adult=false&include_video=false&with_genres=',
+    PLACEHOLDER_IMAGE: "https://s3-ap-southeast-1.amazonaws.com/popcornsg/placeholder-movieimage.png", 
     TOP_FILMS: "https://api.themoviedb.org/3/movie/top_rated?&api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
     POPULAR_FILMS: "https://api.themoviedb.org/3/movie/popular?&api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
     RECOMEND_FIMLS: "https://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR&with_genres=",
     LANCAMENTO_FIMLS: "https://api.themoviedb.org/3/movie/now_playing?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR"
-
+ 
   },
   Strings: {
     MAIN_TITLE: "Series",
