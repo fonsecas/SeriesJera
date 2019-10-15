@@ -14,7 +14,7 @@ import RegisterPage from './pages/login/RegisterPage'
 import SideBar from './components/Sidebar'
 import RecomendList from './pages/series/RecomendList'
 import GenresList from './pages/series/GenresList'
-
+import UserStats from './pages/profile/UserStats'
 const AuthStackNavigator = createStackNavigator({
   LoginPage: { 
     screen: LoginPage,
@@ -75,12 +75,18 @@ const Drawer = createDrawerNavigator(
             <Icon name="visibility" type="material" color={tintColor}/>
           )
         }}, 
-        // 'Recomendados pra mim': { screen: RecomendList,  
+        // 'Estatísticas': { screen: UserStats,  
         //   navigationOptions: {
         //     drawerIcon: ({tintColor}) => (
-        //       <Icon name="star-border" type="material" color={tintColor}/>
+        //       <Icon name="visibility" type="material" color={tintColor}/>
         //     )
         //   }}, 
+      //   'Recomendados pra mim': { screen: RecomendList,  
+      //     navigationOptions: {
+      //       drawerIcon: ({tintColor}) => (
+      //         <Icon name="star-border" type="material" color={tintColor}/>
+      //       )
+      //     }},  
       }, 
       
       { contentOptions: {

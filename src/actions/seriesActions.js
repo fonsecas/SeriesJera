@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 import { Alert, ToastAndroid } from 'react-native';
-import axios from 'axios'
+import axios from 'axios';
+
 
 
 export const SET_WHATCHSERIES = 'SET_WHATCHSERIES';
@@ -13,6 +14,12 @@ export const SET_WHATCHEDSERIES = 'SET_WHATCHEDSERIES';
 const setWatchedSeries = seriesWatched => ({
   type: SET_WHATCHEDSERIES,
   seriesWatched,
+});
+
+export const GET_RECOMENDSERIES = 'GET_RECOMENDSERIES';
+const getRecomendSeries = recomendSeries => ({
+  type: GET_RECOMENDSERIES,
+  recomendSeries,
 });
 
 //BUSCA AS DUAS LISTAS DE FILMES DO USUARIO (ASSISTIR/ASSISTIDOS)
@@ -142,3 +149,54 @@ export const addWatchedList = (movie) => {
   }
 }
 
+export const recomendSeries = (genresFavorite, seriesWatched, whatchlist) => {
+  console.log(genresFavorite)
+  return dispatch => {
+    axios
+      .get(`https://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR&with_genres=${genresFavorite}`)
+      .then(response => {
+        let array =[] 
+        response.data.results.map(recomend => {
+          let itExist = false;
+          whatchlist.map(watch => {
+            console.log(recomend.id, '-', watch.id)
+            if (recomend.id === watch.id) {
+              itExist = true
+              return true
+            }
+            seriesWatched.map(watched => {
+              if (recomend.id === watched.id) {
+                itExist = true
+                return true
+              }
+            })
+          })
+          console.log(itExist)
+          !itExist ? array.push(recomend) : null
+        })
+
+        // this.setState({ recomendList: array });
+        // console.log('entrou aqui', array)
+        const action = getRecomendSeries(array);
+        dispatch(action)
+      }).catch(error => {
+        console.log(error)
+      });
+    // firebase
+    //   .database()
+    //   .ref(`/users/${currentUser.uid}/`)
+    //   .on('value', snapshot => {
+    //     const result = snapshot.val()
+
+    //     const { whatchlist } = result
+
+    //     if (whatchlist) {
+    //       const array = Object.values(whatchlist);
+    //       const action = setWatchSeries(array);
+    //       dispatch(action)
+    //     } else {
+    //       return dispatch(setWatchSeries({}))
+    //     }
+    //   })
+  }
+}

@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, FlatList, TouchableOpacity, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
+import { View, Text, StatusBar, FlatList, Linking, TouchableOpacity, ImageBackground, ScrollView, Image, ToastAndroid, StyleSheet, Switch, Share } from "react-native";
 import React, { Component } from "react";
 import Constants from "../../util/Constants";
 import { callRemoteMethod } from "../../util/WebServiceHandler";
@@ -8,7 +8,6 @@ import { addWatchList, watchSeries, addWatchedList } from '../../actions';
 import { connect } from 'react-redux';
 import { SliderBox } from 'react-native-image-slider-box';
 import SerieCard from '../../components/SerieCard';
-import { StackActions, NavigationActions } from 'react-navigation';
 
 
 
@@ -23,12 +22,14 @@ class SerieDetail extends Component {
     movieDetails: {},
     movieImages: [],
     arrayImages: [],
+    arrayCredits: [],
     isLoading: false,
     whatchlist: [],
     isFavorite: false,
     switchValue: false,
     seriesWatched: [],
-    movieSimilar: []
+    movieSimilar: [],
+    arrayVideos: []
   };
 
   componentDidMount() {
@@ -41,8 +42,11 @@ class SerieDetail extends Component {
   getMovieDetails = () => {
     var endpoint = Constants.URL.BASE_URL + "movie/" + this.props.navigation.state.params.id + "?" + Constants.URL.API_KEY + '&language=pt-BR';
     callRemoteMethod(this, endpoint, {}, "getMovieDetailsCallback", "GET", true, 'DETAIL');
-    callRemoteMethod(this, Constants.URL.BASE_URL_MOVIE + this.props.navigation.state.params.id + '/similar?' + Constants.URL.API_KEY, {}, "getMovieDetailsCallback", "GET", true, 'SIMILAR');
+    callRemoteMethod(this, Constants.URL.BASE_URL_MOVIE + this.props.navigation.state.params.id + '/similar?' + Constants.URL.API_KEY + '&language=pt-BR', {}, "getMovieDetailsCallback", "GET", true, 'SIMILAR');
     callRemoteMethod(this, Constants.URL.IMAGE_BANNER_URL + this.props.navigation.state.params.id + '/images?' + Constants.URL.API_KEY, {}, "getMovieDetailsCallback", "GET", true, 'IMAGES');
+    callRemoteMethod(this, Constants.URL.IMAGE_BANNER_URL + this.props.navigation.state.params.id + '/videos?' + Constants.URL.API_KEY + '&language=pt-BR', {}, "getMovieDetailsCallback", "GET", true, 'VIDEOS');
+    callRemoteMethod(this, Constants.URL.IMAGE_BANNER_URL + this.props.navigation.state.params.id + '/credits?' + Constants.URL.API_KEY, {}, "getMovieDetailsCallback", "GET", true, 'CREDITS');
+
   };
   //SETA OS DETALHES DO FILME
   getMovieDetailsCallback = response => {
@@ -59,6 +63,10 @@ class SerieDetail extends Component {
         return this.setState({ switchValue: isWatched });
       case 'SIMILAR':
         return this.setState({ movieSimilar: response.results });
+      case 'VIDEOS':
+        return this.setState({ arrayVideos: response.results });
+      case 'CREDITS':
+        return this.setState({ arrayCredits: response.cast });
       default:
         return null;
     }
@@ -72,60 +80,61 @@ class SerieDetail extends Component {
     whatchlist.map((item) => {
       item.id === this.state.movieDetails.id ? isFavorite = true : null
     })
-    if (!this.state.isLoading) {
-      if (!this.state.switchValue) {
-        return (isFavorite ?
-          <Button
-            buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
-            titleStyle={{ color: '#D32F2F' }}
-            icon={<Icon name='delete-sweep'
-              type='material'
-              color='#D32F2F'
-              containerStyle={{ marginHorizontal: 10 }} />}
-            type="outline"
-            title="Remover da minha lista"
-            onPress={() => {
-              this.props.addWatchList(false, this.state.movieDetails, true).then(() => {
-                ToastAndroid.show(
-                  'Removido da lista',
-                  ToastAndroid.SHORT,
-                  ToastAndroid.CENTER,
-                );
-                this.setState({ isFavorite: false })
-              }); isFavorite = false
-            }}
-          /> :
-          <Button
-            buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
-            titleStyle={{ color: '#D32F2F' }}
-            icon={<Icon name='playlist-add'
-              type='material'
-              color='#D32F2F'
-              containerStyle={{ marginHorizontal: 10 }} />}
-            type="outline"
-            title="Adicionar na lista para assistir"
-            onPress={() => this.props.addWatchList(true, this.state.movieDetails).then(() => {
-              ToastAndroid.show(
-                'Marcado para assistir',
-                ToastAndroid.SHORT,
-                ToastAndroid.CENTER,
-              );
-            })}
-          />)
-      } else {
-        return <Button
+
+    if (!this.state.switchValue) {
+      return (isFavorite ?
+        <Button
           buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
           titleStyle={{ color: '#D32F2F' }}
-          icon={<Icon name='share'
+          icon={<Icon name='delete-sweep'
             type='material'
             color='#D32F2F'
             containerStyle={{ marginHorizontal: 10 }} />}
           type="outline"
-          title="Compartlihar com amigos"
-          onPress={() => this.onShare(true)}
-        />
-      }
+          title="Remover da lista"
+          onPress={() => {
+            this.setState({ isFavorite: false })
+            this.props.addWatchList(false, this.state.movieDetails, true).then(() => {
+              ToastAndroid.show(
+                'Removido da lista',
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER,
+              );
+              
+            }); isFavorite = false
+          }}
+        /> :
+        <Button
+          buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
+          titleStyle={{ color: '#D32F2F' }}
+          icon={<Icon name='playlist-add'
+            type='material'
+            color='#D32F2F'
+            containerStyle={{ marginHorizontal: 10 }} />}
+          type="outline"
+          title="Adicionar na lista"
+          onPress={() => this.props.addWatchList(true, this.state.movieDetails).then(() => {
+            ToastAndroid.show(
+              'Marcado para assistir',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER,
+            );
+          })}
+        />)
+    } else {
+      return <Button
+        buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
+        titleStyle={{ color: '#D32F2F' }}
+        icon={<Icon name='share'
+          type='material'
+          color='#D32F2F'
+          containerStyle={{ marginHorizontal: 10 }} />}
+        type="outline"
+        title="Compartilhar"
+        onPress={() => this.onShare(true)}
+      />
     }
+
 
   }
   //RENDERIZA O BOTÃO DE ADICIONAR/REMOVER DA LISTA JÁ ASSISTIDOS
@@ -201,7 +210,7 @@ class SerieDetail extends Component {
 
   }
   render() {
-    console.log(this.state.movieDetails)
+    console.log(this.state.arrayCredits)
     return (
       <ScrollView style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -240,8 +249,29 @@ class SerieDetail extends Component {
             </View>
           </View>
         </ImageBackground>
+        {!this.state.isLoading ?
+          <View style={{ flexDirection: 'row', flex: 2 }}>
 
-        {this.renderAddButtonFavorites()}
+            <View style={{ flex: 1 }}>
+              {this.renderAddButtonFavorites()}
+            </View>
+            <View style={{ flex: 1 }}>
+              <Button
+                buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
+                titleStyle={{ color: '#D32F2F' }}
+                icon={<Icon name='live-tv'
+                  type='material'
+                  color='#D32F2F'
+                  containerStyle={{ marginHorizontal: 10 }} />}
+                type="outline"
+                title="Ver Trailer"
+                onPress={() => this.state.arrayVideos.length ? Linking.openURL('https://www.youtube.com/watch?v=' + this.state.arrayVideos[0].key) : ToastAndroid.show('Nenhum trailer encontrado', ToastAndroid.SHORT, ToastAndroid.CENTER)}
+              />
+            </View>
+
+          </View>
+          : null}
+
         {this.renderAddButtonWatched()}
         {!this.state.isLoading ?
           <View><View style={{ margin: 10 }}>
@@ -250,6 +280,24 @@ class SerieDetail extends Component {
             <View style={{ margin: 10 }}>
               <Text style={{ color: 'white', textAlign: 'justify' }}>{this.state.movieDetails.overview}</Text>
             </View>
+            <View style={{ margin: 10 }}>
+              <Text style={{ flex: 0.2, color: '#D32F2F', fontWeight: 'bold' }}>{Constants.Strings.CASTS.toUpperCase()}</Text>
+            </View>
+            <View style={{ margin: 10 }}>
+              <FlatList
+                data={[...this.state.arrayCredits]}
+                renderItem={({ item, index }) => (
+                  <View>
+                    <Image source={{ uri: Constants.URL.IMAGE_URL + item.profile_path }}
+                      style={{ backgroundColor: '#f9f9f9', width: 70, height: 70, borderRadius: 50, marginHorizontal: 13 }} />
+                    <Text style={{ color: 'white', textAlign: 'center', fontSize: item.name.length <= 20 ? 12 : 10 }}>{item.name}</Text>
+                  </View>)}
+                keyExtractor={item => item.id}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+
             <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Filmes Semelhantes</Text>
             <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Parecidos com o que está vendo</Text>
             <FlatList
@@ -260,7 +308,9 @@ class SerieDetail extends Component {
               keyExtractor={item => item.id}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-            /></View> : null}
+            />
+
+          </View> : null}
 
 
       </ScrollView>

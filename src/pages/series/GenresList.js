@@ -22,11 +22,10 @@ class GenresList extends Component {
     page: 1
   };
 
-
+ 
   componentDidMount() {
-    callRemoteMethod(this, Constants.URL.SEARCH_BY_GENRES + this.props.navigation.state.params.id + '&page=' + this.state.page, {}, "searchCallback", "GET", true);
-
-  }
+    this._loadRepositories()
+  } 
   searchCallback = response => {
       if(response.results){
           this.setState({movieList : [...this.state.movieList, ...response.results]})
@@ -35,8 +34,9 @@ class GenresList extends Component {
       console.log(this.state.page)
   }
   _loadRepositories = async () => {
-    this.setState({page : this.state.page + 1})
+    
     callRemoteMethod(this, Constants.URL.SEARCH_BY_GENRES + this.props.navigation.state.params.id + '&page=' + (this.state.page + 1), {}, "searchCallback", "GET", true);
+    this.setState({page : this.state.page + 1})
   }
   render() {
  

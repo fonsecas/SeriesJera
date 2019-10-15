@@ -6,7 +6,7 @@ import Constants from "../../util/Constants";
 import { renderIf } from "../../util/CommonMethods";
 import { Header, Icon, Rating, Badge, Text } from 'react-native-elements'
 import firebase from 'firebase';
-import { watchSeries } from '../../actions';
+import { watchSeries, recomendSeries } from '../../actions';
 import { connect } from 'react-redux';
 import SerieCard from '../../components/SerieCard'
 import { Card, CardItem, Left, Right } from 'native-base';
@@ -25,15 +25,20 @@ class MainScreen extends Component {
     tittleBusca: 'POPULARES',
     movieListLancamento: [],
     movieListPopular: [],
-    movieListTop: []
+    movieListTop: [],
+    genresFavorite: 0,
+    recomendList: []
   };
 
   componentDidMount() {
+    this.props.watchSeries(false);
+    this.props.watchSeries(true);
     callRemoteMethod(this, Constants.URL.TOP_FILMS, {}, "searchCallback", "GET", true, 'TOP');
     callRemoteMethod(this, Constants.URL.LANCAMENTO_FIMLS, {}, "searchCallback", "GET", true, 'LACAMENTO');
-    callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true, 'POPULAR');
+    callRemoteMethod(this, Constants.URL.POPULAR_FILMS, {}, "searchCallback", "GET", true, 'POPULAR'); 
+   // this.getGenres();
+  //  this.props.recomendSeries(this.state.genresFavorite, this.props.seriesWatched, this.props.whatchlist);
 
-    this.props.watchSeries(false);
   }
 
   //REALIZA A CONSULTA COM O VALOR DO CAMPO BUSCAR
@@ -83,11 +88,11 @@ class MainScreen extends Component {
   renderSerieCard(item) {
     let isFavorite = false;
     const { seriesWatched, navigation } = this.props;
-    seriesWatched.map((serieWatch) => {
+    seriesWatched.length ? seriesWatched.map((serieWatch) => {
       if (serieWatch.id === item.id) {
         isFavorite = true;
       }
-    })
+    }) : null;
     return (<SerieCard
       serie={item}
       isWatched={isFavorite}
@@ -100,8 +105,38 @@ class MainScreen extends Component {
 
   }
 
+  getGenres = async () => {
+    console.log(this.props.seriesWatched)
+    this.setState({ isLoading: true });
+          const array = Object.values(this.props.seriesWatched);
+          let categorySums = {}
+          array.forEach(movie => {
+            movie.genres.forEach(genres => {
+              categorySums[genres.id] = (categorySums[genres.id] || 0) + 1
+            })
+          })
+          var maior = -Infinity;
+          var chave;
+          for (var prop in categorySums) {
+            // ignorar propriedades herdadas
+            if (categorySums.hasOwnProperty(prop)) {
+              if (categorySums[prop] > maior) {
+                maior = categorySums[prop];
+                chave = prop;
+              }
+            } 
+          }
+          var chaveInt = parseInt(chave)
+          this.setState({genresFavorite: chaveInt})
+         // } else {
+        //   this.setState({ genresFavorite: [], isLoading: false })
+        // }
+
+  };
+
   render() {
-    const { seriesWatched } = this.props;
+    const { seriesWatched, recomendList } = this.props;
+  
     if (seriesWatched === null) {
       return <ActivityIndicator />;
     }
@@ -109,7 +144,7 @@ class MainScreen extends Component {
     return (
       <View style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
-        <Header backgroundColor={'#D32F2F'}
+        <Header backgroundColor={'#D32F2F'} 
           containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', underlayColor: '#3897f1', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>DESCOBRIR</Text>}
@@ -155,10 +190,23 @@ class MainScreen extends Component {
                           <Text style={{color: 'white'}}>{item.name}</Text>
                         </View></TouchableOpacity>
                       )}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.id.toString()}
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                   />
+                  {/* {renderIf(recomendList.length,
+                <View>
+                  <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Recomendações</Text>
+                  <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Baseadas no seu perfil</Text>
+                  <FlatList
+                    data={[...recomendList]}
+                    renderItem={({ item, index }) => (
+                      this.renderSerieCard(item)
+                    )}
+                    keyExtractor={item => item.id}
+                    horizontal={true}
+                  />
+                </View>)} */}
               <Text style={{ fontFamily: 'Roboto', padding: 5, fontSize: 20, color: '#D32F2F' }}>Acabaram de chegar</Text>
               <Text style={{ fontFamily: 'Roboto', paddingLeft: 5, fontSize: 11, color: "white" }}>Lançamentos do cinema</Text>
               <FlatList
@@ -166,7 +214,7 @@ class MainScreen extends Component {
                 renderItem={({ item, index }) => (
                   this.renderSerieCard(item)
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id.toString()}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               />
@@ -177,7 +225,7 @@ class MainScreen extends Component {
                 renderItem={({ item, index }) => (
                   this.renderSerieCard(item)
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id.toString()}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
 
@@ -189,7 +237,7 @@ class MainScreen extends Component {
                 renderItem={({ item, index }) => (
                   this.renderSerieCard(item)
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id.toString()}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
 
@@ -202,41 +250,16 @@ class MainScreen extends Component {
     );
   }
 }
-const Styles = StyleSheet.create({
-  cardView: {
-    backgroundColor: "white",
-    margin: 10,
-    elevation: 5,
-  },
-  buttonContainer: {
-    marginTop: 10,
-    marginBottom: 10,
-    padding: 5,
-    backgroundColor: "#3897f1",
-    width: 150,
-    borderRadius: 10
-  },
-  buttonText: { color: "white", margin: 5, alignSelf: "center" },
-  lineView: { height: 2, marginTop: 10, backgroundColor: "#EDEDED" },
-  movieList: { marginLeft: 10, marginRight: 10, backgroundColor: "white", elevation: 10 },
-  image: { width: 120, height: 180, marginLeft: 5, marginRight: 20 },
-  rowView: { flexDirection: "row", marginTop: 10 }
-})
 
 const mapStateToProps = state => {
-  const { seriesWatched } = state.series;
-  if (seriesWatched === null) {
-    return { seriesWatched }
-  }
+  const { seriesWatched, recomendList, whatchlist } = state.series;
 
-  const keys = Object.keys(seriesWatched);
-  const seriesWatchedWithKeys = keys.map(id => {
-    return { ...seriesWatched[id] }
-  });
-  return { seriesWatched: seriesWatchedWithKeys };
-}
-
+  return { seriesWatched: seriesWatched,
+            recomendList: recomendList,
+             whatchlist: whatchlist}; 
+} 
+ 
 export default connect(
   mapStateToProps,
-  { watchSeries }
+  { watchSeries, recomendSeries }
 )(MainScreen);
