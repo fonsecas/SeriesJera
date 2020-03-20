@@ -15,6 +15,7 @@ import SideBar from './components/Sidebar'
 import RecomendList from './pages/series/RecomendList'
 import GenresList from './pages/series/GenresList'
 import UserStats from './pages/profile/UserStats'
+import Profile from './pages/profile/Profile'
 const AuthStackNavigator = createStackNavigator({
   LoginPage: { 
     screen: LoginPage,
@@ -75,12 +76,12 @@ const Drawer = createDrawerNavigator(
             <Icon name="visibility" type="material" color={tintColor}/>
           )
         }}, 
-        // 'Estatísticas': { screen: UserStats,  
-        //   navigationOptions: {
-        //     drawerIcon: ({tintColor}) => (
-        //       <Icon name="visibility" type="material" color={tintColor}/>
-        //     )
-        //   }}, 
+        'Estatísticas': { screen: UserStats,  
+          navigationOptions: {
+            drawerIcon: ({tintColor}) => (
+              <Icon name="trending-up" type="material" color={tintColor}/>
+            )
+          }}, 
       //   'Recomendados pra mim': { screen: RecomendList,  
       //     navigationOptions: {
       //       drawerIcon: ({tintColor}) => (
@@ -89,7 +90,8 @@ const Drawer = createDrawerNavigator(
       //     }},  
       }, 
       
-      { contentOptions: {
+      { initialRouteName: 'Descobrir',
+        contentOptions: {
         activeTintColor: "#D32F2F",
         inactiveTintColor: 'white',  
         itemsContainerStyle: { 
@@ -112,7 +114,8 @@ const Drawer = createDrawerNavigator(
   {
   Drawer: { screen: Drawer },
   SerieDetail: {screen: SerieDetail},
-  GenresList: {screen: GenresList}
+  GenresList: {screen: GenresList},
+  Profile: {screen : Profile}
   },
   
   {

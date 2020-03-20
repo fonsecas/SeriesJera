@@ -8,44 +8,6 @@ import { watchSeries } from '../../actions';
 import firebase from 'firebase';
 import { PieChart } from "react-native-chart-kit";
 
-const data = [
-  {
-    name: "Seoul",
-    population: 21500000,
-    color: "rgba(131, 167, 234, 1)",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "Toronto",
-    population: 2800000,
-    color: "#F00",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "Beijing",
-    population: 527612,
-    color: "red",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "New York",
-    population: 8538000,
-    color: "#ffffff",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  },
-  {
-    name: "Moscow",
-    population: 11920000,
-    color: "rgb(0, 0, 255)",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 15
-  }
-];
-
 class UserStats extends Component {
 
   state = {
@@ -57,18 +19,27 @@ class UserStats extends Component {
     hora: '',
     minuto: '',
     segundo: '',
-    genresFavorite: []
+    genresFavorite: [],
+    totalSerie: [],
+    totalAssistido: []
   };
 
 
   componentDidMount() {
-    this.props.watchSeries(false)
+    const { navigation } = this.props;
+    this.focusListener = navigation.addListener('didFocus', () => {
+
+      this.props.watchSeries(false)
     this.getRuntime()
     this.getGenres();
+
+  });
+    
   }
 
   getRuntime() {
     const { seriesWatched } = this.props;
+    console.log(seriesWatched)
     let totalTime = 0
     seriesWatched.map((item) => {
       totalTime = totalTime + item.runtime;
@@ -151,26 +122,30 @@ class UserStats extends Component {
 
           const array = Object.values(seriesWatched);
           console.log('array',array)
-          let categorySums = {}
+          let categorySums = []
           array.forEach(movie => {
-            movie.genres.forEach(genres => {
-              categorySums[genres.id] = (categorySums[genres.id] || 0) + 1
-            }) 
+             categorySums[movie.genres[0].id] = (categorySums[movie.genres[0].id] || 0) + 1
           })
 
-          var maior = -Infinity;
-          var chave;
-          console.log(categorias)
-          // for (var prop in categorySums) {
-          //   // ignorar propriedades herdadas
-          //   if (categorySums.hasOwnProperty(prop)) {
-          //     if (categorySums[prop] > maior) {
-          //       maior = categorySums[prop];
-          //       chave = prop;
-          //     }
-          //   }
-          // }
-          this.setState({ genresFavorite: chave, isLoading: false })
+         console.log(categorySums)
+         let genres = Constants.Strings.GENRES;
+         let totalSerie = []
+          for (var prop in categorySums) {
+            let porcent = 100*(categorySums[prop]/array.length)
+
+           genres.some((item) => {
+
+             if(item.id == prop) {
+              totalSerie.push({name: item.name,
+                total: porcent,
+                 color: item.color,
+                 legendFontColor: 'white'})
+                 return true
+             }
+            
+           })
+          }
+          this.setState({ totalAssistido: categorySums, isLoading: false, totalSerie:totalSerie })
         } else {
           this.setState({ genresFavorite: [], isLoading: false })
         }
@@ -178,7 +153,7 @@ class UserStats extends Component {
   };
   render() {
     const { seriesWatched, navigation } = this.props;
-    console.log(this.state)
+    console.log('serires', seriesWatched)
     if (seriesWatched === null) {
       return <ActivityIndicator />;
     }
@@ -189,16 +164,27 @@ class UserStats extends Component {
         <Header backgroundColor={'#D32F2F'}
           containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'menu', color: '#fff', size: 30, onPress: () => this.props.navigation.openDrawer() }}
-          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>Estatística</Text>}
+          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>ESTATÍSTICAS</Text>}
           rightComponent={null}
         />
 
-        <View style={{ flexDirection: 'row', margin: 10, elevation: 2, backgroundColor: 'white', alignContent: 'center', justifyContent: 'center' }}>
-          <Text>{this.state.hora + ' horas '}</Text>
-          <Text>{this.state.minuto + ' minutos '}</Text>
-        </View>
-        <PieChart
-          data={data}
+        <View style={{ padding:10, borderRadius: 5, margin: 10, elevation: 2, backgroundColor: '#455A64'}}>
+        <Text style={{fontFamily: 'Roboto', color: 'white', marginBottom: 5, fontSize: 12}}>TEMPO TOTAL ASSISTIDO</Text> 
+        <View style={{borderBottomWidth: 1, borderColor: '#f5f5f5',opacity: 0.5}}/>
+        <View style={{flexDirection: 'row', alignContent: 'center', justifyContent: 'center'}}>
+        <View style={{justifyContent: 'flex-end'}}><Text style={{color: 'white', fontSize: 25, fontWeight: 'bold'}}>{this.state.dia}</Text></View>
+          <View style={{justifyContent: 'flex-end'}}><Text  style={{color: 'white', fontSize: 15}}> dias </Text></View>
+          <View style={{justifyContent: 'flex-end'}}><Text style={{color: 'white', fontSize: 25, fontWeight: 'bold'}}>{this.state.hora}</Text></View>
+          <View style={{justifyContent: 'flex-end'}}><Text  style={{color: 'white', fontSize: 15}}> horas </Text></View>
+          <View style={{justifyContent: 'flex-end'}}><Text style={{color: 'white', fontSize: 25, fontWeight: 'bold'}}>{this.state.minuto}</Text></View>
+          <View style={{justifyContent: 'flex-end'}}><Text  style={{color: 'white', fontSize: 15}}> minutos </Text></View>
+        </View >
+        </View>  
+        <View style={{margin: 10, elevation: 2, backgroundColor: '#455A64', padding: 20, borderRadius: 5}}>
+        <Text style={{fontFamily: 'Roboto', color: 'white', marginBottom: 5, fontSize: 12}}>GÊNEROS FAVORITOS</Text> 
+        <View style={{borderBottomWidth: 1, borderColor: '#f5f5f5', opacity: 0.5}}/>
+        <PieChart 
+          data={this.state.totalSerie}
           width={Dimensions.get("window").width} // from react-native
           height={220}
           chartConfig={{
@@ -209,12 +195,12 @@ class UserStats extends Component {
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`}}
 
-          accessor="population"
+          accessor="total"
           backgroundColor="transparent"
-          paddingLeft="15"
           absolute
         />
-
+        <Text style={{color: 'white', fontFamily: 'Roboto', textAlign: 'center'}}>{`Você assistiu ${seriesWatched.length} filmes até agora.`}</Text>
+      </View>
       </View>
     );
   }

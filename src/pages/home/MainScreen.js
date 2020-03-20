@@ -185,7 +185,7 @@ class MainScreen extends Component {
                   <FlatList
                     data={[...Constants.Strings.GENRES]}
                     renderItem={({ item, index }) => (
-                      <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', item)}>
+                      <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', [{query: Constants.URL.SEARCH_BY_GENRES+item.id, obj: item}])}>
                         <View style={{paddingVertical: 5,paddingHorizontal: 10, margin: 5, backgroundColor: 'grey', borderRadius: 15}}>
                           <Text style={{color: 'white'}}>{item.name}</Text>
                         </View></TouchableOpacity>

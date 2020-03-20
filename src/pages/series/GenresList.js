@@ -24,6 +24,7 @@ class GenresList extends Component {
 
  
   componentDidMount() {
+    console.log(this.props)
     this._loadRepositories()
   } 
   searchCallback = response => {
@@ -34,8 +35,9 @@ class GenresList extends Component {
       console.log(this.state.page)
   }
   _loadRepositories = async () => {
-    
-    callRemoteMethod(this, Constants.URL.SEARCH_BY_GENRES + this.props.navigation.state.params.id + '&page=' + (this.state.page + 1), {}, "searchCallback", "GET", true);
+    callRemoteMethod(this, this.props.navigation.state.params[0].query + '&page=' + (this.state.page + 1), {}, "searchCallback", "GET", true);
+
+    //callRemoteMethod(this, Constants.URL.SEARCH_BY_GENRES + this.props.navigation.state.params.id + '&page=' + (this.state.page + 1), {}, "searchCallback", "GET", true);
     this.setState({page : this.state.page + 1})
   }
   render() {
@@ -51,7 +53,7 @@ class GenresList extends Component {
         <Header backgroundColor={'#D32F2F'}
           containerStyle={{ borderBottomWidth: 0 }}
           leftComponent={{ icon: 'arrow-back', color: '#fff', size: 30, onPress: () => this.props.navigation.goBack() }}
-          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{navigation.state.params.name.toUpperCase()}</Text>}
+          centerComponent={<Text style={{ color: 'white', fontWeight: 'bold' }}>{navigation.state.params[0].obj.name.toUpperCase()}</Text>}
           rightComponent={null}
         />
             <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -67,7 +69,7 @@ class GenresList extends Component {
                 keyExtractor={item => item.id}
                 numColumns={3}
                 onEndReached={this._loadRepositories}
-                onEndReachedTresholf={0.03}
+                onEndReachedTresholf={0.9}
               />
             </View>
       </View>

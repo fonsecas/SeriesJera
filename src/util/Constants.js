@@ -13,7 +13,8 @@ module.exports = {
     TOP_FILMS: "https://api.themoviedb.org/3/movie/top_rated?&api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
     POPULAR_FILMS: "https://api.themoviedb.org/3/movie/popular?&api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
     RECOMEND_FIMLS: "https://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR&with_genres=",
-    LANCAMENTO_FIMLS: "https://api.themoviedb.org/3/movie/now_playing?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR"
+    LANCAMENTO_FIMLS: "https://api.themoviedb.org/3/movie/now_playing?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR",
+    WITH_CAST_FILMES: "https://api.themoviedb.org/3/discover/movie?api_key=8f72024179b31532014de08efcc769c2&language=pt-BR&sort_by=popularity.desc&include_adult=false&include_video=false&with_cast="
  
   },
   Strings: {
@@ -33,7 +34,25 @@ module.exports = {
     CASTS: "Elenco:",
     MSG: "Este campo é obrigatório.",
     TOWHATCH: "Assistido:",
-    GENRES: [{"id":28,"name":"Ação"},{"id":12,"name":"Aventura"},{"id":16,"name":"Animação"},{"id":35,"name":"Comédia"},{"id":80,"name":"Crime"},{"id":99,"name":"Documentário"},{"id":18,"name":"Drama"},{"id":10751,"name":"Família"},{"id":14,"name":"Fantasia"},{"id":36,"name":"História"},{"id":27,"name":"Terror"},{"id":10402,"name":"Música"},{"id":9648,"name":"Mistério"},{"id":10749,"name":"Romance"},{"id":878,"name":"Ficção científica"},{"id":10770,"name":"Cinema TV"},{"id":53,"name":"Thriller"},{"id":10752,"name":"Guerra"},{"id":37,"name":"Faroeste"}]
+    GENRES: [{"id":28,"name":"Ação","color": "#c62828"},
+             {"id":12,"name":"Aventura", "color": "#ffeb3b" },
+             {"id":16,"name":"Animação", "color":"#009688"},
+             {"id":35,"name":"Comédia", "color":"#673ab7"},
+             {"id":80,"name":"Crime", "color":"#ff5722"},
+             {"id":99,"name":"Documentário", "color":"#03a9f4"},
+             {"id":18,"name":"Drama", "color":"#9c27b0"},
+             {"id":10751,"name":"Família", "color":"#ffcc80"},
+             {"id":14,"name":"Fantasia", "color":"#4db6ac"},
+             {"id":36,"name":"História", "color":"#bcaaa4"},
+             {"id":27,"name":"Terror", "color":"#b2ebf2"},
+             {"id":10402,"name":"Música", "color":"#aed581"},
+             {"id":9648,"name":"Mistério", "color":"#90a4ae"},
+             {"id":10749,"name":"Romance", "color":"#f06292"},
+             {"id":878,"name":"Ficção científica", "color":"#448aff"},
+             {"id":10770,"name":"Cinema TV", "color":"#FFC107"},
+             {"id":53,"name":"Thriller", "color":"#c8e6c9"},
+             {"id":10752,"name":"Guerra", "color":"#b71c1c"},
+             {"id":37,"name":"Faroeste", "color":"#ffecb3"}]
   },
   Colors: {
     Cyan: "#02ADAD",

@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "praverdepois",
     "name": "PraVerDepois",
     "slug": "praverdepois",
     "privacy": "public",
@@ -29,7 +30,7 @@
     },
     "android": {
       "package": "com.gabrielfonsecah.praverdepois",
-      "versionCode": 12
+      "versionCode": 14
         }
   }
 }

@@ -4,6 +4,7 @@ import { DrawerNavigatorItems } from 'react-navigation-drawer';
 import Moment from 'moment';
 import firebase from 'firebase'
 import { Icon } from 'react-native-elements'
+
 class SideBar extends Component {
   constructor(props) {
     super(props);
@@ -51,11 +52,7 @@ class SideBar extends Component {
       <View style={{ flex: 1, backgroundColor: "#263238" }}>
 
         <View style={{ height: 180, alignItems: 'center', justifyContent: 'center', backgroundColor: '#D32F2F' }}>
-          <TouchableOpacity onPress={() => ToastAndroid.show(
-            'Em breve...',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          )}>
+          <TouchableOpacity>
             <Image source={this.state.userInfo.photoURL ? { uri: `${this.state.userInfo.photoURL}?type=large` } : require('../img/default-user.png')} style={{ borderWidth: 2, borderColor: 'white', height: 60, width: 60, borderRadius: Platform.OS === "ios" ? 10 : 60 }} />
           </TouchableOpacity>
           <Text style={{ fontSize: 18, color: 'white', marginTop: 5 }}>{this.state.userDetail.nome}</Text>
@@ -71,11 +68,7 @@ class SideBar extends Component {
               borderBottomColor: '#E5E5E5',
               borderBottomWidth: 1
             }} />
-          <TouchableOpacity onPress={() => ToastAndroid.show(
-            'Em breve...',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          )}>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('Estatísticas')}>
             <View style={styles.item}>
               <View style={styles.iconContainer}>
                 <Icon name='cog' type='font-awesome' color='white' />

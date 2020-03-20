@@ -119,24 +119,24 @@ export const addWatchedList = (movie) => {
           .ref(`/users/${currentUser.uid}/seriesWatched/${movie.id}`)
           .set(movie)
           .then(() => {
-            ToastAndroid.show(
-              'Marcado como Assistido',
-              ToastAndroid.SHORT,
-              ToastAndroid.CENTER,
-            );
-            Alert.alert(
-              'Compartilhar',
-              'Deseja mostar aos seus amigos que você assistiu esse filme ?',
-              [
-                { text: 'Compartilhar', onPress: () => this.onShare() },
-                {
-                  text: 'Cancelar',
-                  onPress: () => null,
-                  style: 'cancel',
-                },
-              ],
-              { cancelable: false },
-            );
+            // ToastAndroid.show(
+            //   'Marcado como Assistido',
+            //   ToastAndroid.SHORT,
+            //   ToastAndroid.CENTER,
+            // );
+            // Alert.alert(
+            //   'Compartilhar',
+            //   'Deseja mostar aos seus amigos que você assistiu esse filme ?',
+            //   [
+            //     { text: 'Compartilhar', onPress: () => this.onShare() },
+            //     {
+            //       text: 'Cancelar',
+            //       onPress: () => null,
+            //       style: 'cancel',
+            //     },
+            //   ],
+            //   { cancelable: false },
+            // );
             resolve(true);
 
           })

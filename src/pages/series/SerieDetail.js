@@ -104,7 +104,7 @@ class SerieDetail extends Component {
             }); isFavorite = false
           }}
         /> :
-        <Button
+        <Button 
           buttonStyle={{ margin: 5, borderColor: '#D32F2F' }}
           titleStyle={{ color: '#D32F2F' }}
           icon={<Icon name='playlist-add'
@@ -210,7 +210,7 @@ class SerieDetail extends Component {
 
   }
   render() {
-    console.log(this.state.arrayCredits)
+    console.log(this.state)
     return (
       <ScrollView style={{ flex: 1, backgroundColor: '#263238' }}>
         {this.state.isLoading ? <Loader show={true} loading={this.state.isLoading} /> : null}
@@ -236,11 +236,11 @@ class SerieDetail extends Component {
                 <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
                   <Text style={{ color: '#FFF' }}>{this.state.movieDetails.release_date.split("-", 1)}</Text>
                 </View>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', this.state.movieDetails.genres[0])}>
+                {/* <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', this.state.movieDetails.genres[0])}> */}
                   <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
                     <Text style={{ color: '#FFF' }}>{this.state.movieDetails.genres[0].name}</Text>
                   </View>
-                </TouchableOpacity>
+              {/* //  </TouchableOpacity> */}
                 <View style={{ margin: 5, flexDirection: 'row', borderRadius: 15, backgroundColor: '#607D8B', borderColor: "#607D8B", alignSelf: 'flex-start', alignContent: 'center', justifyContent: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
                   <Icon name='star' type='material' size={15} color="#FFDF00" containerStyle={{ marginRight: 3, paddingTop: 2 }} /><Text style={{ color: '#FFF' }}>{this.state.movieDetails.vote_average}</Text>
                 </View>
@@ -287,11 +287,11 @@ class SerieDetail extends Component {
               <FlatList
                 data={[...this.state.arrayCredits]}
                 renderItem={({ item, index }) => (
-                  <View>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate('GenresList', [{query: Constants.URL.WITH_CAST_FILMES+item.id, obj : item}])}>
                     <Image source={{ uri: Constants.URL.IMAGE_URL + item.profile_path }}
                       style={{ backgroundColor: '#f9f9f9', width: 70, height: 70, borderRadius: 50, marginHorizontal: 13 }} />
                     <Text style={{ color: 'white', textAlign: 'center', fontSize: item.name.length <= 20 ? 12 : 10 }}>{item.name}</Text>
-                  </View>)}
+                  </TouchableOpacity>)}
                 keyExtractor={item => item.id}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}

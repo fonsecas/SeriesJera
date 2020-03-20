@@ -10,38 +10,42 @@ import firebase from 'firebase';
 
 class AuthLoadingScreen extends Component {
 
-    constructor() {
-        super()
-        this.loadApp()
-    }
-    loadApp = async () => {
+    // constructor() {
+    //     super()
+    //     this.loadApp()
+    // }
+    // loadApp = async () => {
 
-        const getUserToken = await AsyncStorage.getItem('token9')
-        const userToken = JSON.parse(getUserToken)
-        if (userToken) {
-            if (userToken.token) {
-                const credential = firebase.auth.FacebookAuthProvider.credential(userToken.token);
-                await firebase.auth().signInWithCredential(credential).catch((error) => {
-                    console.log(error)
-                })
-            } else {
+    //     // const getUserToken = await AsyncStorage.getItem('token9')
+    //     // const userToken = JSON.parse(getUserToken)
+    //     // if (userToken) {
+    //     //     if (userToken.token) {
+    //     //         const credential = firebase.auth.FacebookAuthProvider.credential(userToken.token);
+    //     //         await firebase.auth().signInWithCredential(credential).catch((error) => {
+    //     //             console.log(error)
+    //     //         })
+    //     //     } else {
 
-                let email = userToken.email.toString();
-                let password = userToken.password.toString()
-                await firebase
-                    .auth()
-                    .signInWithEmailAndPassword(email, password)
-                    .then(() => {
-                        console.log('usuario logado')
+    //     //         let email = userToken.email.toString();
+    //     //         let password = userToken.password.toString()
+    //     //         await firebase
+    //     //             .auth()
+    //     //             .signInWithEmailAndPassword(email, password)
+    //     //             .then(() => {
+    //     //                 console.log('usuario logado')
 
-                    })
-            }
+    //     //             })
+    //     //     }
 
-        }
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth')
+    //     // }
+    //     // this.props.navigation.navigate(userToken ? 'App' : 'Auth')
 
-    }
-
+    // } 
+componentDidMount(){
+    firebase.auth().onAuthStateChanged(user => {
+        this.props.navigation.navigate(user ? 'App' : 'Auth')
+      }) 
+}
     render() {
         return (
             <View style={styles.container}>
