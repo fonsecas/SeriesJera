@@ -29,7 +29,7 @@
     "react-native-pie-chart": "^1.0.13",
     "react-native-print": "^0.6.0",
     "react-native-push-notification": "^3.1.9",
-    "react-native-reanimated": "^1.2.0",
+    "react-native-reanimated": "^2.10.0",
     "react-native-rn-cardview": "^1.0.4",
     "react-native-shadow-cards": "^1.0.2",
     "react-native-share": "^2.0.0",
